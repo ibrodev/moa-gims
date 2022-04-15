@@ -22,11 +22,17 @@ module.exports = (sequelize, DataTypes) => {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        unique: {
+          args: true,
+          msg: "a position with this name already exists",
+        },
         validate: {
           is: {
             args: /^[a-zA-Z\s]+$/,
-            msg: "Position name must be only letters",
+            msg: "name must be only letters",
+          },
+          notNull: {
+            msg: "name cannot be empty",
           },
         },
       },

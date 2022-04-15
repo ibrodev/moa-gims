@@ -1,4 +1,6 @@
 const express = require("express");
 const v1 = express.Router();
 
-export default v1;
+v1.use("/positions", require("./PositionRouter"));
+
+module.exports = v1;

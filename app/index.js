@@ -19,7 +19,7 @@ app.use(morgan("tiny"));
 app.use(express.json());
 
 // use index router
-app.use(require("./routes/index"));
+app.use(require("./routes"));
 
 // send 404 NotFound
 app.use((req, res, next) => {
@@ -32,9 +32,10 @@ app.use((err, req, res, next) => {
 
   if (app.get("env") === "development") {
     return res.status(status).json({
-      name: err.name || "",
+      name: err.name,
       message: err.message || "",
       stack: err.stack || "",
+      err: err,
     });
   }
 
