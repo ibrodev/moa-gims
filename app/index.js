@@ -2,6 +2,7 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 const morgan = require("morgan");
+const createError = require("http-errors");
 
 const { APP_ENV } = require("../config/app.js");
 
@@ -22,13 +23,26 @@ app.use(require("./routes/index"));
 
 // send 404 NotFound
 app.use((req, res, next) => {
-  res.sendStatus(404);
+  next(createError.NotFound());
 });
 
 // log error to console
 app.use((err, req, res, next) => {
+  let status = err.status || 500;
+
+  if (app.get("env") === "development") {
+    return res.status(status).json({
+      name: err.name || "",
+      message: err.message || "",
+      stack: err.stack || "",
+    });
+  }
+
+  err.message =
+    err.status === 500 ? "Internal Server Error" : err.message || "";
+
   console.log(err);
-  res.sendStatus(err?.status || 500);
+  return res.status(status).json({ message: err.message });
 });
 
 module.exports = app;
