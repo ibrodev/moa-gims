@@ -1,6 +1,4 @@
 const express = require("express");
-const apiV1Router = express.Router();
+const v1 = express.Router();
 
-apiV1Router.use("/users", require("./UsersRouter"));
-
-module.exports = apiV1Router;
+export default v1;
