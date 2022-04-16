@@ -60,13 +60,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.ENUM("admin", "team-leader", "inspector", "recorder"),
         validate: {
-          notNull: {
-            args: true,
-            msg: "role is required",
-          },
           isIn: {
             args: [["admin", "team-leader", "inspector", "recorder"]],
             msg: "role must be one of the following: admin, team-leader, inspector, recorder",
+          },
+          notNull: {
+            args: true,
+            msg: "role is required",
           },
         },
       },
@@ -91,5 +91,14 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   useBcrypt(User, { rounds: 10 });
+
+  User.beforeUpdate(async (user, options) => {
+    if (!user.changed()) {
+      let error = new Error("Nothing to update");
+      error.name = "NothingToUpdate";
+      throw error;
+    }
+  });
+
   return User;
 };
