@@ -50,7 +50,16 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
-      positionId: { type: DataTypes.INTEGER, allowNull: false },
+      positionId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          notNull: {
+            args: true,
+            msg: "position is required",
+          },
+        },
+      },
       createdAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
