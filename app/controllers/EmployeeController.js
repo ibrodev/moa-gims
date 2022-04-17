@@ -94,9 +94,9 @@ module.exports = {
       if (!employee) return res.sendStatus(404);
 
       await employee.update({
-        firstName,
-        lastName,
-        positionId,
+        firstName: firstName || undefined,
+        lastName: lastName || undefined,
+        positionId: positionId || undefined,
       });
       res.status(201).json(employee.id);
     } catch (error) {
@@ -116,6 +116,9 @@ module.exports = {
           errors: [{ path: "positionId", message: "Position does not exist" }],
         });
       }
+
+      if (error.name === "NoChangesDetectedError")
+        return res.status(200).json({ message: "employee not updated" });
 
       return next(error);
     }

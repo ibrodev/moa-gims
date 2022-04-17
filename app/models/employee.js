@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { NoChangesDetected } = require("../helpers/errors");
 module.exports = (sequelize, DataTypes) => {
   class Employee extends Model {
     /**
@@ -75,5 +76,16 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "Employee",
     }
   );
+
+  Employee.beforeUpdate(async (employee) => {
+    if (
+      !employee.changed("firstName") &&
+      !employee.changed("lastName") &&
+      !employee.changed("positionId")
+    ) {
+      throw NoChangesDetected();
+    }
+  });
+
   return Employee;
 };
