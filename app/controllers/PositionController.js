@@ -47,7 +47,7 @@ module.exports = {
       ) {
         return res.status(400).json({
           errors: error.errors?.map((err) => {
-            return { path: err.path, message: err.message };
+            return { [err.path]: err.message };
           }),
         });
       }
@@ -69,7 +69,7 @@ module.exports = {
       const position = await PositionModel.findByPk(id);
       if (!position) return res.sendStatus(404);
 
-      await position.update({ name });
+      await position.update({ name: name || undefined });
       res.status(201).json(position.id);
     } catch (error) {
       if (
@@ -78,10 +78,14 @@ module.exports = {
       ) {
         return res.status(400).json({
           errors: error.errors?.map((err) => {
-            return { path: err.path, message: err.message };
+            return { [err.path]: err.message };
           }),
         });
       }
+      if (error.name === "NoChangesDetectedError")
+        return res.status(200).json({
+          message: "position not updated",
+        });
       next(error);
     }
   },
