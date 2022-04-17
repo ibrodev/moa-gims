@@ -125,8 +125,9 @@ module.exports = {
         });
       }
 
-      if (error.name === "NothingToUpdate")
-        return res.status(200).json({ message: "nothing to update" });
+      if (error.name === "NoChangesDetectedError")
+        return res.status(200).json({ message: "user not updated" });
+
       next(error);
     }
   },

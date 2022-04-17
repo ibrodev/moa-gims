@@ -1,6 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
 const useBcrypt = require("sequelize-bcrypt");
+const { NoChangesDetected } = require("../helpers/errors");
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -93,10 +94,13 @@ module.exports = (sequelize, DataTypes) => {
   useBcrypt(User, { rounds: 10 });
 
   User.beforeUpdate(async (user, options) => {
-    if (!user.changed()) {
-      let error = new Error("Nothing to update");
-      error.name = "NothingToUpdate";
-      throw error;
+    if (
+      !user.changed("username") &&
+      !user.changed("password") &&
+      !user.changed("role") &&
+      !user.changed("employeeId")
+    ) {
+      throw NoChangesDetected();
     }
   });
 
