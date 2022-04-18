@@ -3,6 +3,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const morgan = require("morgan");
 const createError = require("http-errors");
+const cookieParser = require("cookie-parser");
 
 const { APP_ENV } = require("../config/app.js");
 
@@ -14,8 +15,9 @@ app.set("x-powered-by", false);
 
 // app middlewares
 app.use(helmet());
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ credentials: true }));
 app.use(morgan("tiny"));
+app.use(cookieParser());
 app.use(express.json());
 
 // use index router

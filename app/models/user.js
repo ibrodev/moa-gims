@@ -1,7 +1,13 @@
 "use strict";
 const { Model } = require("sequelize");
 const useBcrypt = require("sequelize-bcrypt");
+const jwt = require("jsonwebtoken");
 const { NoChangesDetected } = require("../helpers/errors");
+
+const {
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_SECRET,
+} = require("../../config/app");
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -22,6 +28,23 @@ module.exports = (sequelize, DataTypes) => {
       const values = Object.assign({}, this.get());
       delete values.password;
       return values;
+    }
+
+    authenticateUser() {
+      return {
+        accessToken: this.generateToken({ id: this.id }, ACCESS_TOKEN_SECRET, {
+          expiresIn: "15s",
+        }),
+        refreshToken: this.generateToken(
+          { id: this.id },
+          REFRESH_TOKEN_SECRET,
+          { expiresIn: "1d" }
+        ),
+      };
+    }
+
+    generateToken(payload, secret, options = {}) {
+      return jwt.sign(payload, secret, options);
     }
   }
   User.init(

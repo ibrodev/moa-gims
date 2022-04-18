@@ -1,6 +1,9 @@
 const express = require("express");
 const UserController = require("../../../controllers/UserController");
+const authenticated = require("../../../middlewares/authenticated");
 const UserRouter = express.Router();
+
+UserRouter.use(authenticated);
 
 // Find all users
 UserRouter.get("/", UserController.findAll);
