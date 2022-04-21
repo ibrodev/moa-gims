@@ -31,12 +31,16 @@ module.exports = {
       const { accessToken, refreshToken } = user.authenticateUser();
 
       res.cookie("token", refreshToken, {
-        domain: ".",
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
+        sameSite: true,
       });
 
-      res.status(200).json({ token: accessToken });
+      res.status(200).json({
+        token: accessToken,
+        userRole: user.role,
+        username: user.username,
+      });
     } catch (error) {
       next(error);
     }
@@ -62,7 +66,11 @@ module.exports = {
             expiresIn: "15s",
           });
 
-          return res.json({ token: accessToken });
+          return res.json({
+            token: accessToken,
+            userRole: user.role,
+            username: user.username,
+          });
         } catch (error) {
           next(error);
         }
@@ -82,9 +90,9 @@ module.exports = {
 
       const { id } = decoded;
       res.clearCookie("token", {
-        domain: ".",
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
+        sameSite: true,
       });
 
       return res.sendStatus(204);

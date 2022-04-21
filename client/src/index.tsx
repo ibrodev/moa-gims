@@ -2,17 +2,22 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./fonts/SourceSansPro/font-face.css";
 import "./index.css";
-import App from "./App";
+import App from "./components/app";
 import reportWebVitals from "./reportWebVitals";
 import ThemeContext from "./contexts/ThemeContext";
 import GlobalStyles from "./components/styles/GlobalStyles";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeContext>
-      <GlobalStyles />
-      <App />
-    </ThemeContext>
+    <BrowserRouter>
+      <ThemeContext>
+        <GlobalStyles />
+        <Routes>
+          <Route path="/*" element={<App />} />
+        </Routes>
+      </ThemeContext>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
 );

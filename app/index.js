@@ -15,7 +15,7 @@ app.set("x-powered-by", false);
 
 // app middlewares
 app.use(helmet());
-app.use(cors({ credentials: true }));
+app.use(cors({ credentials: true, origin: true }));
 app.use(morgan("tiny"));
 app.use(cookieParser());
 app.use(express.json());
