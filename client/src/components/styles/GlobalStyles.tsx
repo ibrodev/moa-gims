@@ -12,6 +12,7 @@ const GlobalStyles = () => {
           ...theme.fn.fontStyles(),
           lineHeight: theme.lineHeight,
           margin: 0,
+          backgroundColor: theme.colors.gray[0],
         },
       })}
     />
