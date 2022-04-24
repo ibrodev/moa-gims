@@ -6,8 +6,8 @@ import AuthGuard from "../../middlewares/AuthGuard";
 import Login from "../pages/login";
 import Dashboard from "../pages/dashboard";
 import PersistAuth from "../../middlewares/PersistAuth";
-import GustGuard from "../../middlewares/GustGuard";
 import AppLayout from "../layouts/app";
+import AllUsers from "../pages/users/AllUsers";
 
 function App() {
   return (
@@ -17,10 +17,7 @@ function App() {
           <Route element={<AuthGuard />}>
             <Route element={<AppLayout />}>
               <Route index element={<Dashboard />} />
-              <Route
-                path="/service-request"
-                element={<h1>Service Request Page</h1>}
-              />
+              <Route path="/users" element={<AllUsers />} />
             </Route>
           </Route>
         </Route>

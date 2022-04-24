@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 import React from "react";
 import ReactDOM from "react-dom";
 import "./fonts/SourceSansPro/font-face.css";
@@ -7,6 +9,7 @@ import reportWebVitals from "./reportWebVitals";
 import ThemeContext from "./contexts/ThemeContext";
 import GlobalStyles from "./components/styles/GlobalStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { NotificationsProvider } from "@mantine/notifications";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -14,7 +17,14 @@ ReactDOM.render(
       <ThemeContext>
         <GlobalStyles />
         <Routes>
-          <Route path="/*" element={<App />} />
+          <Route
+            path="/*"
+            element={
+              <NotificationsProvider>
+                <App />
+              </NotificationsProvider>
+            }
+          />
         </Routes>
       </ThemeContext>
     </BrowserRouter>
