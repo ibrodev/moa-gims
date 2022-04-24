@@ -23,4 +23,7 @@ UserRouter.delete("/:id", UserController.delete);
 // Count users
 UserRouter.get("/count", UserController.count);
 
+// Reset user password
+UserRouter.put("/:id/reset-password", UserController.resetPassword);
+
 module.exports = UserRouter;

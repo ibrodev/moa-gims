@@ -16,13 +16,10 @@ import { LinksGroup } from "./NavbarLinksGroup";
 const navbarLinksData = [
   { label: "Dashboard", icon: Gauge, roles: ["*"], link: "/" },
   {
-    label: "User",
+    label: "Users",
     roles: ["admin"],
     icon: Users,
-    links: [
-      { label: "All Users", link: "/users", roles: ["admin"] },
-      { label: "Create User", link: "/new-user", roles: ["admin"] },
-    ],
+    link: "/users",
   },
   {
     label: "Employee",

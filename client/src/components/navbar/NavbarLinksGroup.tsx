@@ -110,26 +110,32 @@ export function LinksGroup({
         className={classes.control}
       >
         <Group position="apart" spacing={0}>
-          <Box sx={{ display: "flex", alignItems: "center", flexGrow: "1" }}>
-            <ThemeIcon variant="light" size={30}>
-              <Icon size={18} />
-            </ThemeIcon>
-            {!!link ? (
-              <NavLink
-                to={link}
-                style={{
-                  textDecoration: "none",
-                  color: "inherit",
-                  marginLeft: 16,
-                  flexGrow: 1,
-                }}
+          {!!link ? (
+            <NavLink
+              to={link}
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+                flexGrow: 1,
+              }}
+            >
+              <Box
+                sx={{ display: "flex", alignItems: "center", flexGrow: "1" }}
               >
-                {label}
-              </NavLink>
-            ) : (
+                <ThemeIcon variant="light" size={30}>
+                  <Icon size={18} />
+                </ThemeIcon>
+                <Box ml="md">{label}</Box>
+              </Box>
+            </NavLink>
+          ) : (
+            <Box sx={{ display: "flex", alignItems: "center", flexGrow: "1" }}>
+              <ThemeIcon variant="light" size={30}>
+                <Icon size={18} />
+              </ThemeIcon>
               <Box ml="md">{label}</Box>
-            )}
-          </Box>
+            </Box>
+          )}
           {hasLinks && (
             <ChevronIcon
               className={classes.chevron}

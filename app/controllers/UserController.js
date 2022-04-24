@@ -87,12 +87,7 @@ module.exports = {
       let { id } = req.params;
       if (isNaN(id)) return next();
 
-      let {
-        username = null,
-        password = null,
-        role = null,
-        employeeId = null,
-      } = req.body;
+      let { username = null, role = null, employeeId = null } = req.body;
 
       username = username && validator.escape(validator.trim(username));
 
@@ -101,7 +96,6 @@ module.exports = {
 
       await user.update({
         username: username || undefined,
-        password: password || undefined,
         role: role || undefined,
         employeeId: employeeId || undefined,
       });
@@ -153,6 +147,27 @@ module.exports = {
     try {
       const count = await UserModel.count();
       res.status(200).json(count);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // reset user password
+  resetPassword: async (req, res, next) => {
+    try {
+      let { id } = req.params;
+      if (isNaN(id)) return next();
+
+      const user = await UserModel.findByPk(id);
+      if (!user) return res.sendStatus(404);
+
+      const { password } = req.body;
+
+      await user.update({
+        password,
+      });
+
+      res.status(200).json(user.id);
     } catch (error) {
       next(error);
     }
