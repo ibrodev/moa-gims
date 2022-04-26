@@ -25,19 +25,13 @@ const navbarLinksData = [
     label: "Employee",
     roles: ["admin"],
     icon: Id,
-    links: [
-      { label: "All Employees", link: "/employees", roles: ["admin"] },
-      { label: "Create Employee", link: "/new-employee", roles: ["admin"] },
-    ],
+    link: "/employees",
   },
   {
-    label: "Position",
+    label: "Positions",
     roles: ["admin"],
     icon: Briefcase,
-    links: [
-      { label: "All Positions", link: "/positions", roles: ["admin"] },
-      { label: "Create Position", link: "/new-position", roles: ["admin"] },
-    ],
+    link: "/positions",
   },
   {
     label: "Vehicle",
@@ -61,10 +55,7 @@ const navbarLinksData = [
     label: "Department",
     roles: ["admin"],
     icon: Home2,
-    links: [
-      { label: "All Departments", link: "/departments", roles: ["admin"] },
-      { label: "Create Department", link: "/new-department", roles: ["admin"] },
-    ],
+    link: "/departments",
   },
   {
     label: "Service Request",

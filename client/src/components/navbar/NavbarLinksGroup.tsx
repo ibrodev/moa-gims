@@ -93,14 +93,6 @@ export function LinksGroup({
       <NavLink to={link.link} className={classes.link} key={link.label}>
         {link.label}
       </NavLink>
-      //   <Text<"a">
-      //     component="a"
-      //     className={classes.link}
-      //     href={link.link}
-      //     key={link.label}
-      //   >
-      //     {link.label}
-      //   </Text>
     ));
 
   return (
@@ -112,12 +104,13 @@ export function LinksGroup({
         <Group position="apart" spacing={0}>
           {!!link ? (
             <NavLink
-              to={link}
-              style={{
+              style={({ isActive }) => ({
                 textDecoration: "none",
                 color: "inherit",
+                fontWeight: isActive ? "bold" : "normal",
                 flexGrow: 1,
-              }}
+              })}
+              to={link}
             >
               <Box
                 sx={{ display: "flex", alignItems: "center", flexGrow: "1" }}

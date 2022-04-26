@@ -1,20 +1,20 @@
 import useAxiosPrivate from "../useAxiosPrivate";
 
-const useEmployeesService = () => {
+const usePositionsService = () => {
   const axiosPrivate = useAxiosPrivate();
 
   const getAll = async () => {
     try {
-      const response = await axiosPrivate.get("/employees");
+      const response = await axiosPrivate.get("/positions");
       return Promise.resolve(response.data);
     } catch (error) {
       return Promise.reject(error);
     }
   };
 
-  const create = async (employeeData) => {
+  const create = async (positionData) => {
     try {
-      const response = await axiosPrivate.post("/employees", employeeData, {
+      const response = await axiosPrivate.post("/positions", positionData, {
         withCredentials: true,
       });
 
@@ -25,11 +25,11 @@ const useEmployeesService = () => {
     }
   };
 
-  const update = async (id, employeeData) => {
+  const update = async (id, positionData) => {
     try {
       const response = await axiosPrivate.put(
-        `/employees/${id}`,
-        employeeData,
+        `/positions/${id}`,
+        positionData,
         {
           withCredentials: true,
         }
@@ -42,20 +42,7 @@ const useEmployeesService = () => {
     }
   };
 
-  const destroy = async (id) => {
-    try {
-      const response = await axiosPrivate.delete(`/employees/${id}`, {
-        withCredentials: true,
-      });
-
-      return Promise.resolve(response.data);
-    } catch (error) {
-      if (error.response?.status === 400)
-        return Promise.reject(error.response.data.errors);
-    }
-  };
-
-  return { getAll, create, update, destroy };
+  return { getAll, create, update };
 };
 
-export default useEmployeesService;
+export default usePositionsService;

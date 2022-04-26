@@ -1,14 +1,10 @@
 import {
   ActionIcon,
   Box,
-  Button,
   Center,
   Group,
   Loader,
-  Menu,
-  Modal,
   Text,
-  Title,
   Tooltip,
   UnstyledButton,
 } from "@mantine/core";
@@ -22,64 +18,36 @@ import {
 } from "react-table";
 import {
   AlertTriangle,
-  Check,
   ChevronDown,
   ChevronUp,
-  Eye,
   MoodSad,
   Pencil,
-  Replace,
-  Select,
   Selector,
-  Trash,
 } from "tabler-icons-react";
 import moment from "moment";
-import useUsersService from "../../hooks/services/useUsersService";
 import useTableComponent from "../ui/table";
 import DataGridGlobalFilter from "./DataGridGlobalFilter";
-import { showNotification } from "@mantine/notifications";
+import usePositionsService from "../../hooks/services/usePositionsService";
 
-const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
-  const [users, setUsers] = useState([]);
-  const [deleted, setDeleted] = useState(null);
-  const [deleteUser, setDeleteUser] = useState({ opened: false, id: null });
+const PositionsDataGrid = ({ newPosition, setActionDrawer }: any) => {
+  const [positions, setPositions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { getAll, destroy } = useUsersService();
+  const { getAll } = usePositionsService();
   const Table = useTableComponent();
 
-  const handleUserDelete = async () => {
+  const fetchPositions = async () => {
     try {
-      await destroy(deleteUser.id);
-      setDeleted(deleteUser.id);
-
-      showNotification({
-        title: "User Deleted",
-        message: `User with id ${deleted} deleted successfully`,
-        icon: <Check size={18} />,
-      });
-      setDeleteUser({ opened: false, id: null });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const users = await getAll();
-      const filteredUsers = users.map((user: any) => {
+      const positions = await getAll();
+      const filteredPositions = positions.map((position: any) => {
         return {
-          id: user.id,
-          "First Name": user.Employee?.firstName || "-",
-          "Last Name": user.Employee?.lastName || "-",
-          Username: user.username,
-          Role: user.role,
-          employeeId: user.employeeId,
-          "Created At": user.createdAt,
+          id: position.id,
+          Name: position.name,
+          "Created At": position.createdAt,
         };
       });
 
-      setUsers(filteredUsers);
+      setPositions(filteredPositions);
     } catch (error: any) {
       setError(error);
     } finally {
@@ -88,26 +56,24 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, [newUser, deleted]);
+    fetchPositions();
+  }, [newPosition]);
 
-  const data = useMemo(() => [...users], [users]);
+  const data = useMemo(() => [...positions], [positions]);
   const columns: Array<Column> = useMemo(
     () =>
-      users[0]
-        ? Object.keys(users[0])
-            .map((key) => {
-              if (key === "Created At")
-                return {
-                  Header: key,
-                  accessor: key,
-                  Cell: ({ value }: any) => moment(value).fromNow(),
-                };
-              return { Header: key === "id" ? "#id" : key, accessor: key };
-            })
-            .filter((column) => column.Header !== "employeeId")
+      positions[0]
+        ? Object.keys(positions[0]).map((key) => {
+            if (key === "Created At")
+              return {
+                Header: key,
+                accessor: key,
+                Cell: ({ value }: any) => moment(value).fromNow(),
+              };
+            return { Header: key === "id" ? "#id" : key, accessor: key };
+          })
         : [],
-    [users]
+    [positions]
   );
 
   const tableHooks = (hooks: Hooks) => {
@@ -118,14 +84,14 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
         Header: "Actions",
         Cell: ({ row }) => (
           <Group spacing="sx">
-            <Tooltip label="edit user" withArrow color="blue">
+            <Tooltip label="edit position" withArrow color="blue">
               <ActionIcon
                 variant="transparent"
                 color="blue"
                 onClick={() =>
                   setActionDrawer({
                     opened: true,
-                    title: "Update User Form",
+                    title: "Update Position Form",
                     action: "update",
                     data: row.original,
                   })
@@ -134,30 +100,6 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
                 <Pencil size={18} />
               </ActionIcon>
             </Tooltip>
-            <Menu position="bottom" placement="end" gutter={-6} withArrow>
-              <Menu.Item
-                icon={<Replace size={18} />}
-                onClick={() =>
-                  setActionDrawer({
-                    opened: true,
-                    title: "Password Reset Form",
-                    action: "passwordReset",
-                    data: row.original,
-                  })
-                }
-              >
-                Reset Password
-              </Menu.Item>
-              <Menu.Item
-                icon={<Trash size={18} />}
-                color="red"
-                onClick={() =>
-                  setDeleteUser({ opened: true, id: row.values.id })
-                }
-              >
-                Delete User
-              </Menu.Item>
-            </Menu>
           </Group>
         ),
       },
@@ -181,10 +123,6 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
     state,
   } = tableInstance;
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
   if (loading)
     return (
       <Box
@@ -196,7 +134,7 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
           padding: "100px",
         }}
       >
-        <Text color="gray">Loading users</Text>{" "}
+        <Text color="gray">Loading positions</Text>{" "}
         <Loader variant="dots" size={50} />{" "}
       </Box>
     );
@@ -208,52 +146,15 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
       </Box>
     );
 
-  if (users?.length === 0)
+  if (positions?.length === 0)
     return (
       <Box>
-        <MoodSad /> <Text>No user found</Text>
+        <MoodSad /> <Text>No position found</Text>
       </Box>
     );
 
   return (
     <>
-      <Modal
-        centered
-        size="sm"
-        opened={deleteUser.opened}
-        onClose={() => setDeleteUser((prev) => ({ ...prev, opened: false }))}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-          mb={40}
-        >
-          <Trash size={30} color="red" />
-          <Title order={4} style={{ color: "red" }} mt={4}>
-            You are about to delete a user
-          </Title>
-          <Text>This will permanently delete the user</Text>
-          <Text>Are you sure?</Text>
-        </Box>
-        <Group spacing="xs" position="right">
-          <Button
-            variant="subtle"
-            color="dark"
-            onClick={() =>
-              setDeleteUser((prev) => ({ ...prev, opened: false }))
-            }
-          >
-            Cancel
-          </Button>
-          <Button color="red" onClick={handleUserDelete}>
-            Delete
-          </Button>
-        </Group>
-      </Modal>
-
       <DataGridGlobalFilter
         preGlobalFilteredRows={preGlobalFilteredFlatRows}
         globalFilter={state.globalFilter}
@@ -312,4 +213,4 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
   );
 };
 
-export default UsersDataGrid;
+export default PositionsDataGrid;

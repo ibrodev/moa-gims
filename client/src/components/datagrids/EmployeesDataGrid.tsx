@@ -25,61 +25,60 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
-  Eye,
   MoodSad,
   Pencil,
-  Replace,
-  Select,
   Selector,
   Trash,
 } from "tabler-icons-react";
 import moment from "moment";
-import useUsersService from "../../hooks/services/useUsersService";
 import useTableComponent from "../ui/table";
 import DataGridGlobalFilter from "./DataGridGlobalFilter";
 import { showNotification } from "@mantine/notifications";
+import useEmployeesService from "../../hooks/services/useEmployeesService";
 
-const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
-  const [users, setUsers] = useState([]);
+const EmployeeDataGrid = ({ newEmployee, setActionDrawer }: any) => {
+  const [employees, setEmployees] = useState([]);
   const [deleted, setDeleted] = useState(null);
-  const [deleteUser, setDeleteUser] = useState({ opened: false, id: null });
+  const [deleteEmployee, setDeleteEmployee] = useState({
+    opened: false,
+    id: null,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { getAll, destroy } = useUsersService();
+  const { getAll, destroy } = useEmployeesService();
   const Table = useTableComponent();
 
-  const handleUserDelete = async () => {
+  const handleEmployeeDelete = async () => {
     try {
-      await destroy(deleteUser.id);
-      setDeleted(deleteUser.id);
+      await destroy(deleteEmployee.id);
+      setDeleted(deleteEmployee.id);
 
       showNotification({
-        title: "User Deleted",
-        message: `User with id ${deleted} deleted successfully`,
+        title: "Employee Deleted",
+        message: `Employee with id ${deleted} deleted successfully`,
         icon: <Check size={18} />,
       });
-      setDeleteUser({ opened: false, id: null });
+      setDeleteEmployee({ opened: false, id: null });
     } catch (error) {
       console.log(error);
     }
   };
 
-  const fetchUsers = async () => {
+  const fetchEmployees = async () => {
     try {
-      const users = await getAll();
-      const filteredUsers = users.map((user: any) => {
+      const employees = await getAll();
+      const filteredEmployees = employees.map((employee: any) => {
         return {
-          id: user.id,
-          "First Name": user.Employee?.firstName || "-",
-          "Last Name": user.Employee?.lastName || "-",
-          Username: user.username,
-          Role: user.role,
-          employeeId: user.employeeId,
-          "Created At": user.createdAt,
+          id: employee.id,
+          "First Name": employee.firstName || "-",
+          "Last Name": employee.lastName || "-",
+          positionId: employee.positionId,
+          Position: employee.Position?.name,
+          "Created At": employee.createdAt,
         };
       });
 
-      setUsers(filteredUsers);
+      setEmployees(filteredEmployees);
     } catch (error: any) {
       setError(error);
     } finally {
@@ -88,14 +87,14 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, [newUser, deleted]);
+    fetchEmployees();
+  }, [newEmployee, deleted]);
 
-  const data = useMemo(() => [...users], [users]);
+  const data = useMemo(() => [...employees], [employees]);
   const columns: Array<Column> = useMemo(
     () =>
-      users[0]
-        ? Object.keys(users[0])
+      employees[0]
+        ? Object.keys(employees[0])
             .map((key) => {
               if (key === "Created At")
                 return {
@@ -105,9 +104,9 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
                 };
               return { Header: key === "id" ? "#id" : key, accessor: key };
             })
-            .filter((column) => column.Header !== "employeeId")
+            .filter((column) => column.Header !== "positionId")
         : [],
-    [users]
+    [employees]
   );
 
   const tableHooks = (hooks: Hooks) => {
@@ -118,14 +117,14 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
         Header: "Actions",
         Cell: ({ row }) => (
           <Group spacing="sx">
-            <Tooltip label="edit user" withArrow color="blue">
+            <Tooltip label="edit employee" withArrow color="blue">
               <ActionIcon
                 variant="transparent"
                 color="blue"
                 onClick={() =>
                   setActionDrawer({
                     opened: true,
-                    title: "Update User Form",
+                    title: "Update Employee Form",
                     action: "update",
                     data: row.original,
                   })
@@ -136,26 +135,13 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
             </Tooltip>
             <Menu position="bottom" placement="end" gutter={-6} withArrow>
               <Menu.Item
-                icon={<Replace size={18} />}
-                onClick={() =>
-                  setActionDrawer({
-                    opened: true,
-                    title: "Password Reset Form",
-                    action: "passwordReset",
-                    data: row.original,
-                  })
-                }
-              >
-                Reset Password
-              </Menu.Item>
-              <Menu.Item
                 icon={<Trash size={18} />}
                 color="red"
                 onClick={() =>
-                  setDeleteUser({ opened: true, id: row.values.id })
+                  setDeleteEmployee({ opened: true, id: row.values.id })
                 }
               >
-                Delete User
+                Delete Employee
               </Menu.Item>
             </Menu>
           </Group>
@@ -181,10 +167,6 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
     state,
   } = tableInstance;
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
   if (loading)
     return (
       <Box
@@ -196,7 +178,7 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
           padding: "100px",
         }}
       >
-        <Text color="gray">Loading users</Text>{" "}
+        <Text color="gray">Loading employees</Text>{" "}
         <Loader variant="dots" size={50} />{" "}
       </Box>
     );
@@ -208,10 +190,10 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
       </Box>
     );
 
-  if (users?.length === 0)
+  if (employees?.length === 0)
     return (
       <Box>
-        <MoodSad /> <Text>No user found</Text>
+        <MoodSad /> <Text>No employee found</Text>
       </Box>
     );
 
@@ -220,8 +202,10 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
       <Modal
         centered
         size="sm"
-        opened={deleteUser.opened}
-        onClose={() => setDeleteUser((prev) => ({ ...prev, opened: false }))}
+        opened={deleteEmployee.opened}
+        onClose={() =>
+          setDeleteEmployee((prev) => ({ ...prev, opened: false }))
+        }
       >
         <Box
           sx={{
@@ -233,9 +217,9 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
         >
           <Trash size={30} color="red" />
           <Title order={4} style={{ color: "red" }} mt={4}>
-            You are about to delete a user
+            You are about to delete an employee
           </Title>
-          <Text>This will permanently delete the user</Text>
+          <Text>This will permanently delete the employee</Text>
           <Text>Are you sure?</Text>
         </Box>
         <Group spacing="xs" position="right">
@@ -243,12 +227,12 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
             variant="subtle"
             color="dark"
             onClick={() =>
-              setDeleteUser((prev) => ({ ...prev, opened: false }))
+              setDeleteEmployee((prev) => ({ ...prev, opened: false }))
             }
           >
             Cancel
           </Button>
-          <Button color="red" onClick={handleUserDelete}>
+          <Button color="red" onClick={handleEmployeeDelete}>
             Delete
           </Button>
         </Group>
@@ -312,4 +296,4 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
   );
 };
 
-export default UsersDataGrid;
+export default EmployeeDataGrid;
