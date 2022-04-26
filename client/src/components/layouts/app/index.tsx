@@ -13,6 +13,8 @@ import {
   Box,
   Title,
   Button,
+  Menu,
+  Avatar,
 } from "@mantine/core";
 import MyNavbar from "../../navbar";
 import MoaLogo from "../../../images/moa-logo.png";
@@ -82,14 +84,13 @@ export default function AppLayout() {
               <div
                 style={{ display: "flex", alignItems: "center", gap: "8px" }}
               >
-                <Text>username - {auth?.username}</Text>
-                <Button
-                  variant="subtle"
-                  rightIcon={<Logout size={16} />}
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
+                <Avatar radius="xl" />
+                <Menu withArrow>
+                  <Menu.Item disabled>{auth?.username}</Menu.Item>
+                  <Menu.Item icon={<Logout size={16} />} onClick={handleLogout}>
+                    Logout
+                  </Menu.Item>
+                </Menu>
               </div>
             </Box>
           </div>
