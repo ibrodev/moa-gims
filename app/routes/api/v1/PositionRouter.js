@@ -2,6 +2,8 @@ const express = require("express");
 const PositionController = require("../../../controllers/PositionController");
 const PositionRouter = express.Router();
 
+PositionRouter.use(require("../../../middlewares/authenticated"));
+
 // Find all positions
 PositionRouter.get("/", PositionController.findAll);
 

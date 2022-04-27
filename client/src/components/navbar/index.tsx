@@ -37,19 +37,13 @@ const navbarLinksData = [
     label: "Vehicle",
     roles: ["recorder"],
     icon: Car,
-    links: [
-      { label: "All Vehicles", link: "/vehicles", roles: ["recorder"] },
-      { label: "Create Vehicle", link: "/new-vehicle", roles: ["recorder"] },
-    ],
+    link: "/vehicles",
   },
   {
     label: "Driver",
     roles: ["recorder"],
     icon: User,
-    links: [
-      { label: "All Drivers", link: "/drivers", roles: ["recorder"] },
-      { label: "Create Driver", link: "/new-driver", roles: ["recorder"] },
-    ],
+    link: "/drivers",
   },
   {
     label: "Department",
@@ -150,7 +144,7 @@ function MyNavbar(prop: any) {
   return (
     <Navbar
       height="100vh"
-      width={{ sm: 300 }}
+      width={{ sm: 230 }}
       p="md"
       className={classes.navbar}
       hidden={prop.opened}

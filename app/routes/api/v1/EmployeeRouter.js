@@ -2,6 +2,8 @@ const express = require("express");
 const EmployeesController = require("../../../controllers/EmployeeController");
 const EmployeeRouter = express.Router();
 
+EmployeeRouter.use(require("../../../middlewares/authenticated"));
+
 // find all employees
 EmployeeRouter.get("/", EmployeesController.findAll);
 

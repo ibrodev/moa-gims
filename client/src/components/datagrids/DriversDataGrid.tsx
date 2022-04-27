@@ -27,29 +27,27 @@ import {
 import moment from "moment";
 import useTableComponent from "../ui/table";
 import DataGridGlobalFilter from "./DataGridGlobalFilter";
-import useDriversService from "../../hooks/services/useDriversService";
+import usePositionsService from "../../hooks/services/usePositionsService";
 
-const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
-  const [drivers, setDrivers] = useState([]);
+const PositionsDataGrid = ({ newPosition, setActionDrawer }: any) => {
+  const [positions, setPositions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { getAll } = useDriversService();
+  const { getAll } = usePositionsService();
   const Table = useTableComponent();
 
-  const fetchDrivers = async () => {
+  const fetchPositions = async () => {
     try {
-      const drivers = await getAll();
-      const filteredDrivers = drivers.map((driver: any) => {
+      const positions = await getAll();
+      const filteredPositions = positions.map((position: any) => {
         return {
-          id: driver.id,
-          "First Name": driver.firstName,
-          "Last Name": driver.lastName,
-          "License No": driver.licenseNo,
-          "Created At": driver.createdAt,
+          id: position.id,
+          Name: position.name,
+          "Created At": position.createdAt,
         };
       });
 
-      setDrivers(filteredDrivers);
+      setPositions(filteredPositions);
     } catch (error: any) {
       setError(error);
     } finally {
@@ -58,14 +56,14 @@ const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
   };
 
   useEffect(() => {
-    fetchDrivers();
-  }, [newDriver]);
+    fetchPositions();
+  }, [newPosition]);
 
-  const data = useMemo(() => [...drivers], [drivers]);
+  const data = useMemo(() => [...positions], [positions]);
   const columns: Array<Column> = useMemo(
     () =>
-      drivers[0]
-        ? Object.keys(drivers[0]).map((key) => {
+      positions[0]
+        ? Object.keys(positions[0]).map((key) => {
             if (key === "Created At")
               return {
                 Header: key,
@@ -75,7 +73,7 @@ const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
             return { Header: key === "id" ? "#id" : key, accessor: key };
           })
         : [],
-    [drivers]
+    [positions]
   );
 
   const tableHooks = (hooks: Hooks) => {
@@ -86,14 +84,14 @@ const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
         Header: "Actions",
         Cell: ({ row }) => (
           <Group spacing="sx">
-            <Tooltip label="edit driver" withArrow color="blue">
+            <Tooltip label="edit position" withArrow color="blue">
               <ActionIcon
                 variant="transparent"
                 color="blue"
                 onClick={() =>
                   setActionDrawer({
                     opened: true,
-                    title: "Update Driver Form",
+                    title: "Update Position Form",
                     action: "update",
                     data: row.original,
                   })
@@ -148,10 +146,10 @@ const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
       </Box>
     );
 
-  if (drivers?.length === 0)
+  if (positions?.length === 0)
     return (
       <Box>
-        <MoodSad /> <Text>No drivers found</Text>
+        <MoodSad /> <Text>No position found</Text>
       </Box>
     );
 
@@ -215,4 +213,4 @@ const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
   );
 };
 
-export default DriversDataGrid;
+export default PositionsDataGrid;

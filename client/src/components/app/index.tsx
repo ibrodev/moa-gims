@@ -11,6 +11,8 @@ import AllUsers from "../pages/users/AllUsers";
 import Positions from "../pages/positions/Positions";
 import Employees from "../pages/employees/Employees";
 import Departments from "../pages/departments/Departments";
+import Vehicles from "../pages/vehicles/Vehicles";
+import Drivers from "../pages/drivers/Drivers";
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
               <Route path="/positions" element={<Positions />} />
               <Route path="/employees" element={<Employees />} />
               <Route path="/departments" element={<Departments />} />
+              <Route path="/vehicles" element={<Vehicles />} />
+              <Route path="/drivers" element={<Drivers />} />
             </Route>
           </Route>
         </Route>

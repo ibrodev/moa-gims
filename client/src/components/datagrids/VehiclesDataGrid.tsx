@@ -1,10 +1,14 @@
 import {
   ActionIcon,
   Box,
+  Button,
   Center,
   Group,
   Loader,
+  Menu,
+  Modal,
   Text,
+  Title,
   Tooltip,
   UnstyledButton,
 } from "@mantine/core";
@@ -18,38 +22,49 @@ import {
 } from "react-table";
 import {
   AlertTriangle,
+  Check,
   ChevronDown,
   ChevronUp,
+  Eye,
   MoodSad,
   Pencil,
+  Replace,
+  Select,
   Selector,
+  Trash,
 } from "tabler-icons-react";
 import moment from "moment";
+import useUsersService from "../../hooks/services/useUsersService";
 import useTableComponent from "../ui/table";
 import DataGridGlobalFilter from "./DataGridGlobalFilter";
-import useDriversService from "../../hooks/services/useDriversService";
+import { showNotification } from "@mantine/notifications";
+import useVehiclesService from "../../hooks/services/useVehiclesService";
 
-const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
-  const [drivers, setDrivers] = useState([]);
+const VehiclesDataGrid = ({ newVehicle, setActionDrawer }: any) => {
+  const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { getAll } = useDriversService();
+  const { getAll } = useVehiclesService();
   const Table = useTableComponent();
 
-  const fetchDrivers = async () => {
+  const fetchVehicle = async () => {
     try {
-      const drivers = await getAll();
-      const filteredDrivers = drivers.map((driver: any) => {
+      const vehicles = await getAll();
+      const filteredVehicles = vehicles.map((vehicle: any) => {
         return {
-          id: driver.id,
-          "First Name": driver.firstName,
-          "Last Name": driver.lastName,
-          "License No": driver.licenseNo,
-          "Created At": driver.createdAt,
+          id: vehicle.id,
+          "Plate No": vehicle.plateNo,
+          Manufacturer: vehicle.manufacturer,
+          Model: vehicle.model,
+          "Engine No": vehicle.engineNo,
+          "Engine Capacity": vehicle.engineCapacity,
+          "Engine Type": vehicle.engineType,
+          "Chassis No": vehicle.chassisNo,
+          "Created At": vehicle.createdAt,
         };
       });
 
-      setDrivers(filteredDrivers);
+      setVehicles(filteredVehicles);
     } catch (error: any) {
       setError(error);
     } finally {
@@ -58,14 +73,14 @@ const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
   };
 
   useEffect(() => {
-    fetchDrivers();
-  }, [newDriver]);
+    fetchVehicle();
+  }, [newVehicle]);
 
-  const data = useMemo(() => [...drivers], [drivers]);
+  const data = useMemo(() => [...vehicles], [vehicles]);
   const columns: Array<Column> = useMemo(
     () =>
-      drivers[0]
-        ? Object.keys(drivers[0]).map((key) => {
+      vehicles[0]
+        ? Object.keys(vehicles[0]).map((key) => {
             if (key === "Created At")
               return {
                 Header: key,
@@ -75,7 +90,7 @@ const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
             return { Header: key === "id" ? "#id" : key, accessor: key };
           })
         : [],
-    [drivers]
+    [vehicles]
   );
 
   const tableHooks = (hooks: Hooks) => {
@@ -86,16 +101,16 @@ const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
         Header: "Actions",
         Cell: ({ row }) => (
           <Group spacing="sx">
-            <Tooltip label="edit driver" withArrow color="blue">
+            <Tooltip label="edit vehicle" withArrow color="blue">
               <ActionIcon
                 variant="transparent"
                 color="blue"
                 onClick={() =>
                   setActionDrawer({
                     opened: true,
-                    title: "Update Driver Form",
+                    title: "Update Vehicle Form",
                     action: "update",
-                    data: row.original,
+                    data: row.values,
                   })
                 }
               >
@@ -136,7 +151,7 @@ const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
           padding: "100px",
         }}
       >
-        <Text color="gray">Loading positions</Text>{" "}
+        <Text color="gray">Loading users</Text>{" "}
         <Loader variant="dots" size={50} />{" "}
       </Box>
     );
@@ -148,10 +163,10 @@ const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
       </Box>
     );
 
-  if (drivers?.length === 0)
+  if (vehicles?.length === 0)
     return (
       <Box>
-        <MoodSad /> <Text>No drivers found</Text>
+        <MoodSad /> <Text>No user found</Text>
       </Box>
     );
 
@@ -215,4 +230,4 @@ const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
   );
 };
 
-export default DriversDataGrid;
+export default VehiclesDataGrid;

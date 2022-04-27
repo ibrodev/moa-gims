@@ -1,6 +1,9 @@
 const express = require("express");
+const authenticated = require("../../../middlewares/authenticated");
 const DepartmentController = require("../../../controllers/DepartmentController");
 const DepartmentRouter = express.Router();
+
+DepartmentRouter.use(authenticated);
 
 // Find all departments
 DepartmentRouter.get("/", DepartmentController.findAll);

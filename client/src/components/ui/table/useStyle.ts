@@ -15,7 +15,6 @@ const useStyle = createStyles((theme) => ({
     color: theme.colors.blue[7] + " !important",
 
     "& button": {
-      fontWeight: "600",
       color: "inherit",
     },
   },
