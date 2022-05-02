@@ -5,6 +5,8 @@ const useStyle = createStyles((theme) => ({
     backgroundColor: theme.white,
     border: `1px solid ${theme.colors.gray[3]}`,
     marginTop: theme.spacing.xs,
+    width: "100%",
+    minWidth: "max-content",
   },
 
   header: {
@@ -13,10 +15,24 @@ const useStyle = createStyles((theme) => ({
 
   cellHeading: {
     color: theme.colors.blue[7] + " !important",
-
+    width: "max-content",
     "& button": {
       color: "inherit",
+      display: "flex",
+      width: "100%",
+      "&  div": {
+        flexDirection: "row",
+        flexWrap: "nowrap",
+        justifyContent: "space-around",
+        width: "100%",
+        minWidth: "max-content",
+      },
     },
+  },
+
+  cell: {
+    width: "max-content",
+    maxWidth: "300px",
   },
 }));
 

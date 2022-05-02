@@ -13,6 +13,7 @@ import {
   Column,
   Hooks,
   useGlobalFilter,
+  usePagination,
   useSortBy,
   useTable,
 } from "react-table";
@@ -28,6 +29,8 @@ import moment from "moment";
 import useTableComponent from "../ui/table";
 import DataGridGlobalFilter from "./DataGridGlobalFilter";
 import useDepartmentsService from "../../hooks/services/useDepartmentsService";
+import DataGridPagination from "./DataGridPagination";
+import DataGridSetPageSize from "./DataGridSetPageSize";
 
 const DepartmentsDataGrid = ({ newDepartment, setActionDrawer }: any) => {
   const [departments, setDepartments] = useState([]);
@@ -107,19 +110,30 @@ const DepartmentsDataGrid = ({ newDepartment, setActionDrawer }: any) => {
   };
 
   const tableInstance = useTable(
-    { columns, data },
+    { columns, data, initialState: { pageIndex: 0 } },
     useGlobalFilter,
     tableHooks,
-    useSortBy
+    useSortBy,
+    usePagination
   );
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    page,
     prepareRow,
     preGlobalFilteredFlatRows,
     setGlobalFilter,
+
+    // pagination
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
     state,
   } = tableInstance;
 
@@ -155,11 +169,17 @@ const DepartmentsDataGrid = ({ newDepartment, setActionDrawer }: any) => {
 
   return (
     <>
-      <DataGridGlobalFilter
-        preGlobalFilteredRows={preGlobalFilteredFlatRows}
-        globalFilter={state.globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
+      <Group>
+        <DataGridGlobalFilter
+          preGlobalFilteredRows={preGlobalFilteredFlatRows}
+          globalFilter={state.globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
+        <DataGridSetPageSize
+          pageSize={`${state.pageSize}`}
+          setPageSize={setPageSize}
+        />
+      </Group>
 
       <Table.Container {...getTableProps()}>
         <Table.Header>
@@ -193,7 +213,7 @@ const DepartmentsDataGrid = ({ newDepartment, setActionDrawer }: any) => {
           ))}
         </Table.Header>
         <Table.Body {...getTableBodyProps()}>
-          {rows.map((row) => {
+          {page.map((row) => {
             prepareRow(row);
             return (
               <Table.Row {...row.getRowProps()}>
@@ -209,6 +229,16 @@ const DepartmentsDataGrid = ({ newDepartment, setActionDrawer }: any) => {
           })}
         </Table.Body>
       </Table.Container>
+      <DataGridPagination
+        canPreviousPage={canPreviousPage}
+        canNextPage={canNextPage}
+        pageOptions={pageOptions}
+        pageCount={pageCount}
+        gotoPage={gotoPage}
+        nextPage={nextPage}
+        previousPage={previousPage}
+        pageIndex={state.pageIndex}
+      />
     </>
   );
 };

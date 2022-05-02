@@ -13,6 +13,7 @@ import {
   Column,
   Hooks,
   useGlobalFilter,
+  usePagination,
   useSortBy,
   useTable,
 } from "react-table";
@@ -27,27 +28,31 @@ import {
 import moment from "moment";
 import useTableComponent from "../ui/table";
 import DataGridGlobalFilter from "./DataGridGlobalFilter";
-import usePositionsService from "../../hooks/services/usePositionsService";
+import useDriversService from "../../hooks/services/useDriversService";
+import DataGridPagination from "./DataGridPagination";
+import DataGridSetPageSize from "./DataGridSetPageSize";
 
-const PositionsDataGrid = ({ newPosition, setActionDrawer }: any) => {
-  const [positions, setPositions] = useState([]);
+const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
+  const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { getAll } = usePositionsService();
+  const { getAll } = useDriversService();
   const Table = useTableComponent();
 
-  const fetchPositions = async () => {
+  const fetchDrivers = async () => {
     try {
-      const positions = await getAll();
-      const filteredPositions = positions.map((position: any) => {
+      const drivers = await getAll();
+      const filteredDrivers = drivers.map((driver: any) => {
         return {
-          id: position.id,
-          Name: position.name,
-          "Created At": position.createdAt,
+          id: driver.id,
+          "First Name": driver.firstName,
+          "Last Name": driver.lastName,
+          "License No": driver.licenseNo,
+          "Created At": driver.createdAt,
         };
       });
 
-      setPositions(filteredPositions);
+      setDrivers(filteredDrivers);
     } catch (error: any) {
       setError(error);
     } finally {
@@ -56,14 +61,14 @@ const PositionsDataGrid = ({ newPosition, setActionDrawer }: any) => {
   };
 
   useEffect(() => {
-    fetchPositions();
-  }, [newPosition]);
+    fetchDrivers();
+  }, [newDriver]);
 
-  const data = useMemo(() => [...positions], [positions]);
+  const data = useMemo(() => [...drivers], [drivers]);
   const columns: Array<Column> = useMemo(
     () =>
-      positions[0]
-        ? Object.keys(positions[0]).map((key) => {
+      drivers[0]
+        ? Object.keys(drivers[0]).map((key) => {
             if (key === "Created At")
               return {
                 Header: key,
@@ -73,7 +78,7 @@ const PositionsDataGrid = ({ newPosition, setActionDrawer }: any) => {
             return { Header: key === "id" ? "#id" : key, accessor: key };
           })
         : [],
-    [positions]
+    [drivers]
   );
 
   const tableHooks = (hooks: Hooks) => {
@@ -84,14 +89,14 @@ const PositionsDataGrid = ({ newPosition, setActionDrawer }: any) => {
         Header: "Actions",
         Cell: ({ row }) => (
           <Group spacing="sx">
-            <Tooltip label="edit position" withArrow color="blue">
+            <Tooltip label="edit driver" withArrow color="blue">
               <ActionIcon
                 variant="transparent"
                 color="blue"
                 onClick={() =>
                   setActionDrawer({
                     opened: true,
-                    title: "Update Position Form",
+                    title: "Update Driver Form",
                     action: "update",
                     data: row.original,
                   })
@@ -107,19 +112,30 @@ const PositionsDataGrid = ({ newPosition, setActionDrawer }: any) => {
   };
 
   const tableInstance = useTable(
-    { columns, data },
+    { columns, data, initialState: { pageIndex: 0 } },
     useGlobalFilter,
     tableHooks,
-    useSortBy
+    useSortBy,
+    usePagination
   );
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    page,
     prepareRow,
     preGlobalFilteredFlatRows,
     setGlobalFilter,
+
+    // pagination
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
     state,
   } = tableInstance;
 
@@ -146,20 +162,26 @@ const PositionsDataGrid = ({ newPosition, setActionDrawer }: any) => {
       </Box>
     );
 
-  if (positions?.length === 0)
+  if (drivers?.length === 0)
     return (
       <Box>
-        <MoodSad /> <Text>No position found</Text>
+        <MoodSad /> <Text>No drivers found</Text>
       </Box>
     );
 
   return (
     <>
-      <DataGridGlobalFilter
-        preGlobalFilteredRows={preGlobalFilteredFlatRows}
-        globalFilter={state.globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
+      <Group>
+        <DataGridGlobalFilter
+          preGlobalFilteredRows={preGlobalFilteredFlatRows}
+          globalFilter={state.globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
+        <DataGridSetPageSize
+          pageSize={`${state.pageSize}`}
+          setPageSize={setPageSize}
+        />
+      </Group>
 
       <Table.Container {...getTableProps()}>
         <Table.Header>
@@ -193,7 +215,7 @@ const PositionsDataGrid = ({ newPosition, setActionDrawer }: any) => {
           ))}
         </Table.Header>
         <Table.Body {...getTableBodyProps()}>
-          {rows.map((row) => {
+          {page.map((row) => {
             prepareRow(row);
             return (
               <Table.Row {...row.getRowProps()}>
@@ -209,8 +231,18 @@ const PositionsDataGrid = ({ newPosition, setActionDrawer }: any) => {
           })}
         </Table.Body>
       </Table.Container>
+      <DataGridPagination
+        canPreviousPage={canPreviousPage}
+        canNextPage={canNextPage}
+        pageOptions={pageOptions}
+        pageCount={pageCount}
+        gotoPage={gotoPage}
+        nextPage={nextPage}
+        previousPage={previousPage}
+        pageIndex={state.pageIndex}
+      />
     </>
   );
 };
 
-export default PositionsDataGrid;
+export default DriversDataGrid;

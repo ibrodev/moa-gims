@@ -10,6 +10,7 @@ import ThemeContext from "./contexts/ThemeContext";
 import GlobalStyles from "./components/styles/GlobalStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NotificationsProvider } from "@mantine/notifications";
+import { ModalsProvider } from "@mantine/modals";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -21,7 +22,9 @@ ReactDOM.render(
             path="/*"
             element={
               <NotificationsProvider>
-                <App />
+                <ModalsProvider>
+                  <App />
+                </ModalsProvider>
               </NotificationsProvider>
             }
           />

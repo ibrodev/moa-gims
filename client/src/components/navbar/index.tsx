@@ -34,6 +34,12 @@ const navbarLinksData = [
     link: "/positions",
   },
   {
+    label: "Service Request",
+    roles: ["team-leader", "recorder", "inspector"],
+    icon: CarCrash,
+    link: "/service-requests",
+  },
+  {
     label: "Vehicle",
     roles: ["recorder"],
     icon: Car,
@@ -50,28 +56,6 @@ const navbarLinksData = [
     roles: ["admin"],
     icon: Home2,
     link: "/departments",
-  },
-  {
-    label: "Service Request",
-    roles: ["team-leader", "recorder", "inspector"],
-    icon: CarCrash,
-    links: [
-      {
-        label: "Service Requests",
-        link: "/service-requests",
-        roles: ["recorder"],
-      },
-      {
-        label: "Add New",
-        link: "/new-service-request",
-        roles: ["recorder"],
-      },
-      {
-        label: "Received",
-        link: "/service-request",
-        roles: ["team-leader", "inspector"],
-      },
-    ],
   },
   {
     label: "Work Order",

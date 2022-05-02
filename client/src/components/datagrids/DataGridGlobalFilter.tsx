@@ -1,15 +1,14 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { ActionIcon, TextInput, useMantineTheme } from "@mantine/core";
+import { TextInput } from "@mantine/core";
 import { useState } from "react";
-import { useAsyncDebounce, UseGlobalFiltersInstanceProps } from "react-table";
-import { ArrowRight, Search } from "tabler-icons-react";
+import { useAsyncDebounce } from "react-table";
+import { Search } from "tabler-icons-react";
 
 const DataGridGlobalFilter = ({
   preGlobalFilteredRows,
   globalFilter,
   setGlobalFilter,
 }: any) => {
-  const theme = useMantineTheme();
   const [value, setValue] = useState(globalFilter);
   const onChange = useAsyncDebounce((value) => {
     setGlobalFilter(value || undefined);
@@ -27,7 +26,7 @@ const DataGridGlobalFilter = ({
           setValue(e.target.value);
           onChange(e.target.value);
         }}
-        style={{ maxWidth: "400px" }}
+        style={{ width: "400px" }}
       />
     </>
   );
