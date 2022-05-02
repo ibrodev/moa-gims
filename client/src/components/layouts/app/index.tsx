@@ -41,6 +41,8 @@ export default function AppLayout() {
             theme.colorScheme === "dark"
               ? theme.colors.dark[8]
               : theme.colors.gray[0],
+          width: "100%",
+          paddingBottom: "5rem",
         },
       }}
       navbarOffsetBreakpoint="md"

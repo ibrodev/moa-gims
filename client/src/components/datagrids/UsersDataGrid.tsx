@@ -17,6 +17,7 @@ import {
   Column,
   Hooks,
   useGlobalFilter,
+  usePagination,
   useSortBy,
   useTable,
 } from "react-table";
@@ -38,6 +39,8 @@ import useUsersService from "../../hooks/services/useUsersService";
 import useTableComponent from "../ui/table";
 import DataGridGlobalFilter from "./DataGridGlobalFilter";
 import { showNotification } from "@mantine/notifications";
+import DataGridSetPageSize from "./DataGridSetPageSize";
+import DataGridPagination from "./DataGridPagination";
 
 const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
   const [users, setUsers] = useState([]);
@@ -165,19 +168,30 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
   };
 
   const tableInstance = useTable(
-    { columns, data },
+    { columns, data, initialState: { pageIndex: 0 } },
     useGlobalFilter,
     tableHooks,
-    useSortBy
+    useSortBy,
+    usePagination
   );
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    page,
     prepareRow,
     preGlobalFilteredFlatRows,
     setGlobalFilter,
+
+    // pagination
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
     state,
   } = tableInstance;
 
@@ -254,11 +268,17 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
         </Group>
       </Modal>
 
-      <DataGridGlobalFilter
-        preGlobalFilteredRows={preGlobalFilteredFlatRows}
-        globalFilter={state.globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
+      <Group>
+        <DataGridGlobalFilter
+          preGlobalFilteredRows={preGlobalFilteredFlatRows}
+          globalFilter={state.globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
+        <DataGridSetPageSize
+          pageSize={`${state.pageSize}`}
+          setPageSize={setPageSize}
+        />
+      </Group>
 
       <Table.Container {...getTableProps()}>
         <Table.Header>
@@ -292,7 +312,7 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
           ))}
         </Table.Header>
         <Table.Body {...getTableBodyProps()}>
-          {rows.map((row) => {
+          {page.map((row) => {
             prepareRow(row);
             return (
               <Table.Row {...row.getRowProps()}>
@@ -308,6 +328,16 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
           })}
         </Table.Body>
       </Table.Container>
+      <DataGridPagination
+        canPreviousPage={canPreviousPage}
+        canNextPage={canNextPage}
+        pageOptions={pageOptions}
+        pageCount={pageCount}
+        gotoPage={gotoPage}
+        nextPage={nextPage}
+        previousPage={previousPage}
+        pageIndex={state.pageIndex}
+      />
     </>
   );
 };

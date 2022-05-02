@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import { Plus } from "tabler-icons-react";
 import useAuth from "../../../hooks/useAuth";
-import DriversDataGrid from "../../datagrids/PositionsDataGrid";
+import DriversDataGrid from "../../datagrids/DriversDataGrid";
 import CreateDrivers from "./CreateDrivers";
 import UpdateDriver from "./UpdateDrivers";
 

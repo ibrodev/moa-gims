@@ -17,6 +17,7 @@ import {
   Column,
   Hooks,
   useGlobalFilter,
+  usePagination,
   useSortBy,
   useTable,
 } from "react-table";
@@ -35,6 +36,8 @@ import useTableComponent from "../ui/table";
 import DataGridGlobalFilter from "./DataGridGlobalFilter";
 import { showNotification } from "@mantine/notifications";
 import useEmployeesService from "../../hooks/services/useEmployeesService";
+import DataGridPagination from "./DataGridPagination";
+import DataGridSetPageSize from "./DataGridSetPageSize";
 
 const EmployeeDataGrid = ({ newEmployee, setActionDrawer }: any) => {
   const [employees, setEmployees] = useState([]);
@@ -151,19 +154,30 @@ const EmployeeDataGrid = ({ newEmployee, setActionDrawer }: any) => {
   };
 
   const tableInstance = useTable(
-    { columns, data },
+    { columns, data, initialState: { pageIndex: 0 } },
     useGlobalFilter,
     tableHooks,
-    useSortBy
+    useSortBy,
+    usePagination
   );
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    page,
     prepareRow,
     preGlobalFilteredFlatRows,
     setGlobalFilter,
+
+    // pagination
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
     state,
   } = tableInstance;
 
@@ -238,11 +252,17 @@ const EmployeeDataGrid = ({ newEmployee, setActionDrawer }: any) => {
         </Group>
       </Modal>
 
-      <DataGridGlobalFilter
-        preGlobalFilteredRows={preGlobalFilteredFlatRows}
-        globalFilter={state.globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
+      <Group>
+        <DataGridGlobalFilter
+          preGlobalFilteredRows={preGlobalFilteredFlatRows}
+          globalFilter={state.globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
+        <DataGridSetPageSize
+          pageSize={`${state.pageSize}`}
+          setPageSize={setPageSize}
+        />
+      </Group>
 
       <Table.Container {...getTableProps()}>
         <Table.Header>
@@ -276,7 +296,7 @@ const EmployeeDataGrid = ({ newEmployee, setActionDrawer }: any) => {
           ))}
         </Table.Header>
         <Table.Body {...getTableBodyProps()}>
-          {rows.map((row) => {
+          {page.map((row) => {
             prepareRow(row);
             return (
               <Table.Row {...row.getRowProps()}>
@@ -292,6 +312,16 @@ const EmployeeDataGrid = ({ newEmployee, setActionDrawer }: any) => {
           })}
         </Table.Body>
       </Table.Container>
+      <DataGridPagination
+        canPreviousPage={canPreviousPage}
+        canNextPage={canNextPage}
+        pageOptions={pageOptions}
+        pageCount={pageCount}
+        gotoPage={gotoPage}
+        nextPage={nextPage}
+        previousPage={previousPage}
+        pageIndex={state.pageIndex}
+      />
     </>
   );
 };

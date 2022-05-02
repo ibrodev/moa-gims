@@ -9,5 +9,6 @@ v1.use("/users", require("./UserRouter"));
 v1.use("/departments", require("./DepartmentRouter"));
 v1.use("/vehicles", require("./VehicleRouter"));
 v1.use("/drivers", require("./DriverRouter"));
+v1.use("/service-requests", require("./ServiceRequestRouter"));
 
 module.exports = v1;

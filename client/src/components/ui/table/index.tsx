@@ -1,5 +1,5 @@
 import React from "react";
-import { Table as MTable } from "@mantine/core";
+import { ScrollArea, Table as MTable } from "@mantine/core";
 import useStyle from "./useStyle";
 
 interface ChildrenProps {
@@ -11,15 +11,23 @@ const useTable = () => {
   const { classes } = useStyle();
 
   const Container = ({ children, ...props }: ChildrenProps) => (
-    <MTable
-      {...props}
-      className={classes.container}
-      highlightOnHover
-      verticalSpacing="sm"
-      striped
+    <ScrollArea
+      style={{ width: "100%" }}
+      type="auto"
+      offsetScrollbars
+      scrollbarSize={8}
+      lockScroll={true}
     >
-      {children}
-    </MTable>
+      <MTable
+        {...props}
+        className={classes.container}
+        highlightOnHover
+        verticalSpacing="sm"
+        striped
+      >
+        {children}
+      </MTable>
+    </ScrollArea>
   );
   const Header = ({ children, ...props }: ChildrenProps) => (
     <thead {...props} className={classes.header}>
@@ -36,7 +44,9 @@ const useTable = () => {
     <tr {...props}>{children}</tr>
   );
   const Cell = ({ children, ...props }: ChildrenProps) => (
-    <td {...props}>{children}</td>
+    <td {...props} className={classes.cell}>
+      {children}
+    </td>
   );
   const CellHeading = ({ children, ...props }: ChildrenProps) => (
     <th {...props} className={classes.cellHeading}>

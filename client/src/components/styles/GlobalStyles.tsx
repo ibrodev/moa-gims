@@ -13,6 +13,7 @@ const GlobalStyles = () => {
           lineHeight: theme.lineHeight,
           margin: 0,
           backgroundColor: theme.colors.gray[0],
+          overflowX: "hidden",
         },
       })}
     />

@@ -46,6 +46,7 @@ function Login() {
         token: response.token,
         userRole: response.userRole,
         username: response.username,
+        user: response.user,
       });
 
       return navigate("/");

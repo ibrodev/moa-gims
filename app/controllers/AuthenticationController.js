@@ -40,6 +40,7 @@ module.exports = {
         token: accessToken,
         userRole: user.role,
         username: user.username,
+        user,
       });
     } catch (error) {
       next(error);
@@ -70,6 +71,7 @@ module.exports = {
             token: accessToken,
             userRole: user.role,
             username: user.username,
+            user,
           });
         } catch (error) {
           next(error);
