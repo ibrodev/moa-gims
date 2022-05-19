@@ -161,7 +161,7 @@ const ServiceRequestsDataGrid = ({
           return {
             id: serviceRequest.id,
             Vehicle: serviceRequest.Vehicle.plateNo,
-            Department: serviceRequest.Department.name,
+            Department: serviceRequest.Department?.name,
             Driver: `${serviceRequest.Driver?.firstName} ${serviceRequest.Driver?.lastName}`,
             DriverObj: serviceRequest.Driver,
             Faults: serviceRequest.Faults,
@@ -249,7 +249,7 @@ const ServiceRequestsDataGrid = ({
         id: "Actions",
         Header: "Actions",
         Cell: ({ row }) => (
-          <Group spacing="sx">
+          <Group spacing="sm">
             {auth.userRole === "recorder" && row.values.Status === "draft" ? (
               <>
                 <Tooltip label="edit" withArrow color="blue">

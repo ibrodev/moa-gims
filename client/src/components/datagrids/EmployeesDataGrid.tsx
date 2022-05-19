@@ -119,7 +119,7 @@ const EmployeeDataGrid = ({ newEmployee, setActionDrawer }: any) => {
         id: "Actions",
         Header: "Actions",
         Cell: ({ row }) => (
-          <Group spacing="sx">
+          <Group spacing="sm">
             <Tooltip label="edit employee" withArrow color="blue">
               <ActionIcon
                 variant="transparent"

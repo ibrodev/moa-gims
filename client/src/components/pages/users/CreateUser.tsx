@@ -61,7 +61,7 @@ function CreateUser({ setNewUser }: any) {
     try {
       const response = await getAll();
       const employees = response?.map((employee: EmployeeInterface) => ({
-        value: employee.id,
+        value: `${employee.id}`,
         label: `${employee.firstName} ${employee.lastName}`,
         position: employee.Position.name,
       }));

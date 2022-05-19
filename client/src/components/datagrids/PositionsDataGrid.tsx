@@ -86,7 +86,7 @@ const PositionsDataGrid = ({ newPosition, setActionDrawer }: any) => {
         id: "Actions",
         Header: "Actions",
         Cell: ({ row }) => (
-          <Group spacing="sx">
+          <Group spacing="sm">
             <Tooltip label="edit position" withArrow color="blue">
               <ActionIcon
                 variant="transparent"

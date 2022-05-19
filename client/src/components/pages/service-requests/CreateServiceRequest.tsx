@@ -67,8 +67,8 @@ function CreateServiceRequest({ setNewServiceRequest }: any) {
     try {
       const response = await getAllVehicles();
       const vehicles = response?.map((vehicle: any) => ({
-        value: vehicle.id,
-        label: vehicle.plateNo,
+        value: `${vehicle.id}`,
+        label: `${vehicle.plateNo}`,
       }));
       setVehicles(vehicles);
     } catch (error) {
@@ -80,7 +80,7 @@ function CreateServiceRequest({ setNewServiceRequest }: any) {
     try {
       const response = await getAllDrivers();
       const drivers = response?.map((driver: any) => ({
-        value: driver.id,
+        value: `${driver.id}`,
         label: `${driver.firstName} ${driver.lastName}`,
         licenseNo: driver.licenseNo,
       }));
@@ -94,8 +94,8 @@ function CreateServiceRequest({ setNewServiceRequest }: any) {
     try {
       const response = await getAllDepartments();
       const departments = response?.map((department: any) => ({
-        value: department.id,
-        label: department.name,
+        value: `${department.id}`,
+        label: `${department.name}`,
       }));
       setDepartments(departments);
     } catch (error) {
@@ -237,7 +237,6 @@ function CreateServiceRequest({ setNewServiceRequest }: any) {
           label="Faults"
           labelPosition="center"
           styles={{
-            root: { marginBottom: "0 !important" },
             label: { color: "black", fontSize: "1rem" },
           }}
         />

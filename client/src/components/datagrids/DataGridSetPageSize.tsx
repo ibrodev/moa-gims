@@ -16,7 +16,7 @@ function DataGridSetPageSize({
         value: `${pageSize}`,
         label: `Show ${pageSize} records per page`,
       }))}
-      onChange={setPageSize}
+      onChange={() => setPageSize(Number(pageSize))}
       size="md"
     />
   );

@@ -112,9 +112,7 @@ export function LinksGroup({
               })}
               to={link}
             >
-              <Box
-                sx={{ display: "flex", alignItems: "center", flexGrow: "1" }}
-              >
+              <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
                 <ThemeIcon variant="light" size={30}>
                   <Icon size={18} />
                 </ThemeIcon>
@@ -122,7 +120,7 @@ export function LinksGroup({
               </Box>
             </NavLink>
           ) : (
-            <Box sx={{ display: "flex", alignItems: "center", flexGrow: "1" }}>
+            <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
               <ThemeIcon variant="light" size={30}>
                 <Icon size={18} />
               </ThemeIcon>

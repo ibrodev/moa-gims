@@ -7,12 +7,19 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ ServiceRequest }) {
+    static associate({ ServiceRequest, WorkOrder }) {
       // define association here
       Fault.belongsTo(ServiceRequest, {
         foreignKey: "serviceRequestId",
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
+        constraints: false,
+      });
+
+      Fault.belongsTo(WorkOrder, {
+        foreignKey: "workOrderId",
+        onDelete: "RESTRICT",
+        onUpdate: "NO ACTION",
         constraints: false,
       });
     }

@@ -42,7 +42,7 @@ export default function AppLayout() {
               ? theme.colors.dark[8]
               : theme.colors.gray[0],
           width: "100%",
-          paddingBottom: "5rem",
+          paddingBottom: "2rem",
         },
       }}
       navbarOffsetBreakpoint="md"
@@ -75,12 +75,7 @@ export default function AppLayout() {
               <div
                 style={{ display: "flex", alignItems: "center", gap: "8px" }}
               >
-                <Image
-                  src={MoaLogo}
-                  height={40}
-                  width={40}
-                  styles={{ marginRight: 10 }}
-                />
+                <Image src={MoaLogo} height={40} width={40} />
                 <Title order={3}>MoA - GIMS</Title>
               </div>
               <div

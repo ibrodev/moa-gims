@@ -16,7 +16,6 @@ const useTable = () => {
       type="auto"
       offsetScrollbars
       scrollbarSize={8}
-      lockScroll={true}
     >
       <MTable
         {...props}

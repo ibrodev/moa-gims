@@ -4,6 +4,7 @@ import {
   Center,
   Drawer,
   Group,
+  ScrollArea,
   Title,
   useMantineTheme,
 } from "@mantine/core";
@@ -52,18 +53,23 @@ function Vehicles() {
         position="right"
         lockScroll={true}
       >
-        {actionDrawer.opened &&
-          (actionDrawer.action === "create" ? (
-            <CreateVehicle setNewVehicle={setNewVehicle} />
-          ) : actionDrawer.action === "update" ? (
-            <UpdateVehicle
-              setNewVehicle={setNewVehicle}
-              data={actionDrawer.data}
-              setActionDrawer={setActionDrawer}
-            />
-          ) : (
-            <></>
-          ))}
+        <ScrollArea
+          style={{ height: "100%", padding: "0 0 50px 0" }}
+          offsetScrollbars
+        >
+          {actionDrawer.opened &&
+            (actionDrawer.action === "create" ? (
+              <CreateVehicle setNewVehicle={setNewVehicle} />
+            ) : actionDrawer.action === "update" ? (
+              <UpdateVehicle
+                setNewVehicle={setNewVehicle}
+                data={actionDrawer.data}
+                setActionDrawer={setActionDrawer}
+              />
+            ) : (
+              <></>
+            ))}
+        </ScrollArea>
       </Drawer>
 
       <Box

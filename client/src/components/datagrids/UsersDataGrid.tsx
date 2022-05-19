@@ -120,7 +120,7 @@ const UsersDataGrid = ({ newUser, setActionDrawer }: any) => {
         id: "Actions",
         Header: "Actions",
         Cell: ({ row }) => (
-          <Group spacing="sx">
+          <Group spacing="sm">
             <Tooltip label="edit user" withArrow color="blue">
               <ActionIcon
                 variant="transparent"

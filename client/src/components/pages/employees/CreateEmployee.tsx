@@ -33,8 +33,8 @@ function CreateEmployee({ setNewEmployee }: any) {
     try {
       const response = await getAll();
       const positions = response?.map((position: PositionInterface) => ({
-        value: position.id,
-        label: position.name,
+        value: `${position.id}`,
+        label: `${position.name}`,
       }));
       setPositions(positions);
     } catch (error) {

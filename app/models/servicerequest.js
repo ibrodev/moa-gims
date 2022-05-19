@@ -7,7 +7,14 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Vehicle, Department, Driver, Employee, Fault }) {
+    static associate({
+      Vehicle,
+      Department,
+      Driver,
+      Employee,
+      Fault,
+      WorkOrder,
+    }) {
       // define association here
       ServiceRequest.belongsTo(Vehicle, {
         foreignKey: "vehicleId",
@@ -37,6 +44,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         foreignKey: "serviceRequestId",
+      });
+
+      ServiceRequest.hasMany(WorkOrder, {
+        foreignKey: "serviceRequestId",
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
       });
     }
   }
@@ -108,6 +121,15 @@ module.exports = (sequelize, DataTypes) => {
       inspectorId: {
         allowNull: true,
         type: DataTypes.INTEGER,
+      },
+      serviceType: {
+        type: DataTypes.ENUM(["in-house", "out-source"]),
+        validate: {
+          isIn: {
+            args: [["in-house", "out-source"]],
+            msg: "service type must be either 'in-house' or 'out-source'",
+          },
+        },
       },
       createdAt: {
         allowNull: false,

@@ -88,7 +88,7 @@ const DriversDataGrid = ({ newDriver, setActionDrawer }: any) => {
         id: "Actions",
         Header: "Actions",
         Cell: ({ row }) => (
-          <Group spacing="sx">
+          <Group spacing="sm">
             <Tooltip label="edit driver" withArrow color="blue">
               <ActionIcon
                 variant="transparent"

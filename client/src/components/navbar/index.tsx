@@ -61,18 +61,7 @@ const navbarLinksData = [
     label: "Work Order",
     roles: ["inspector", "recorder"],
     icon: Tool,
-    links: [
-      {
-        label: "Work Orders",
-        link: "/work-orders",
-        roles: ["inspector", "recorder"],
-      },
-      {
-        label: "Add New",
-        link: "/new-work-order",
-        roles: ["inspector"],
-      },
-    ],
+    link: "/work-orders",
   },
 ];
 

@@ -60,7 +60,7 @@ function UpdateServiceRequest({
       const response = await getAllVehicles();
       const vehicles = response?.map((vehicle: any) => ({
         value: `${vehicle.id}`,
-        label: vehicle.plateNo,
+        label: `${vehicle.plateNo}`,
       }));
       setVehicles(vehicles);
     } catch (error) {
@@ -87,7 +87,7 @@ function UpdateServiceRequest({
       const response = await getAllDepartments();
       const departments = response?.map((department: any) => ({
         value: `${department.id}`,
-        label: department.name,
+        label: `${department.name}`,
       }));
       setDepartments(departments);
     } catch (error) {
