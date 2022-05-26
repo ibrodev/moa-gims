@@ -14,7 +14,6 @@ import useAuth from "../../../hooks/useAuth";
 import ServiceRequestsDataGrid from "../../datagrids/ServiceRequestsDataGrid";
 import WorkOrdersDataGrid from "../../datagrids/WorkOrdersDataGrid";
 import AssignInspector from "../service-requests/AssignInspector";
-import UpdateOdometerReading from "../service-requests/UpdateOdometerReading";
 import UpdateServiceRequest from "../service-requests/UpdateServiceRequest";
 import CreateWorkOrder from "./CreateWorkOrders";
 import UpdateWorkOrder from "./UpdateWorkOrders";
@@ -79,11 +78,7 @@ function WorkOrders() {
                 setActionDrawer={setActionDrawer}
               />
             ) : actionDrawer.action === "updateOdometerReading" ? (
-              <UpdateOdometerReading
-                setNewServiceRequest={setNewWorkOrder}
-                data={actionDrawer.data}
-                setActionDrawer={setActionDrawer}
-              />
+              <></>
             ) : (
               <></>
             ))}

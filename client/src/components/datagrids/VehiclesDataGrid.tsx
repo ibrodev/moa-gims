@@ -59,6 +59,8 @@ const VehiclesDataGrid = ({ newVehicle, setActionDrawer }: any) => {
           "Plate No": vehicle.plateNo,
           Manufacturer: vehicle.manufacturer,
           Model: vehicle.model,
+          Type: vehicle.vehicleType.name,
+          "Project / Regular": vehicle.project ? "Project" : "Regular",
           "Engine No": vehicle.engineNo,
           "Engine Capacity": vehicle.engineCapacity,
           "Engine Type": vehicle.engineType,

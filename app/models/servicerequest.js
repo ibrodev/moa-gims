@@ -44,6 +44,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         foreignKey: "serviceRequestId",
+        as: "faults",
       });
 
       ServiceRequest.hasMany(WorkOrder, {
@@ -121,15 +122,6 @@ module.exports = (sequelize, DataTypes) => {
       inspectorId: {
         allowNull: true,
         type: DataTypes.INTEGER,
-      },
-      serviceType: {
-        type: DataTypes.ENUM(["in-house", "out-source"]),
-        validate: {
-          isIn: {
-            args: [["in-house", "out-source"]],
-            msg: "service type must be either 'in-house' or 'out-source'",
-          },
-        },
       },
       createdAt: {
         allowNull: false,

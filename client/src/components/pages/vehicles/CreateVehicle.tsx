@@ -1,3 +1,4 @@
+import { Checkbox } from "@mantine/core";
 import {
   Box,
   Button,
@@ -26,17 +27,19 @@ import useVehiclesService from "../../../hooks/services/useVehiclesService";
 
 function CreateVehicle({ setNewVehicle }: any) {
   const [loading, setLoading] = useState(false);
+  const [vehicleTypes, setVehicleTypes] = useState<any>([]);
 
-  const { create } = useVehiclesService();
+  const { create, getTypes } = useVehiclesService();
 
   const schema = z.object({
     plateNo: z.string(),
     manufacturer: z.string(),
     model: z.string(),
     engineNo: z.string().optional(),
-    engineCapacity: z.number().optional(),
     engineType: z.string().optional(),
     chassisNo: z.string().optional(),
+    vehicleTypeId: z.string(),
+    project: z.boolean(),
   });
 
   const form = useForm({
@@ -46,9 +49,11 @@ function CreateVehicle({ setNewVehicle }: any) {
       manufacturer: "",
       model: "",
       engineNo: "",
-      engineCapacity: "",
+      engineCapacity: null,
       engineType: "",
       chassisNo: "",
+      vehicleTypeId: "",
+      project: false,
     },
   });
 
@@ -79,18 +84,39 @@ function CreateVehicle({ setNewVehicle }: any) {
     }
   };
 
+  const fetchVehicleTypes = async () => {
+    const result = await getTypes();
+    const types = result.map((type: any) => ({
+      label: `${type.name}`,
+      value: `${type.id}`,
+    }));
+    setVehicleTypes(types);
+  };
+
+  useEffect(() => {
+    fetchVehicleTypes();
+  }, []);
+
   return (
     <Box>
       <form onSubmit={form.onSubmit(handleOnSubmit)}>
-        <TextInput
-          required
-          label="Plate No"
-          name="plateNo"
-          placeholder="Plate No"
-          description="something"
-          {...form.getInputProps("plateNo")}
-          size="md"
-        />
+        <Group sx={{ alignItems: "end" }}>
+          <TextInput
+            required
+            label="Plate No"
+            name="plateNo"
+            placeholder="Plate No"
+            description="something"
+            {...form.getInputProps("plateNo")}
+            size="md"
+          />
+          <Checkbox
+            mt="md"
+            label="Project Owned"
+            {...form.getInputProps("project", { type: "checkbox" })}
+            mb={1}
+          />
+        </Group>
         <TextInput
           required
           label="Manufacturer"
@@ -106,6 +132,24 @@ function CreateVehicle({ setNewVehicle }: any) {
           placeholder="Model"
           {...form.getInputProps("model")}
           size="md"
+        />
+        <Select
+          required
+          label="Vehicle Type"
+          data={vehicleTypes}
+          placeholder="Select Vehicle Type"
+          nothingFound="Nothing found"
+          value={form.values.vehicleTypeId}
+          onChange={(value: any) => form.setFieldValue("vehicleTypeId", value)}
+          searchable
+          creatable
+          getCreateLabel={(query) => `+ Create "${query}"`}
+          onCreate={(query) =>
+            setVehicleTypes((current: any) => {
+              const newType = { label: query, value: query };
+              return [...current, newType];
+            })
+          }
         />
         <TextInput
           label="Engine No"

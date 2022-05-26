@@ -10,6 +10,9 @@ VehicleRouter.get("/", VehicleController.findAll);
 // Find user by id
 VehicleRouter.get("/:id", VehicleController.findById);
 
+// Find all vehicle types
+VehicleRouter.get("/types", VehicleController.findTypes);
+
 // Create a new user
 VehicleRouter.post("/", VehicleController.create);
 

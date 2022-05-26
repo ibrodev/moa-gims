@@ -12,15 +12,20 @@ const useServiceRequestsService = () => {
     }
   };
 
-  const create = async (serviceRequestsData) => {
+  const getById = async (id) => {
     try {
-      const response = await axiosPrivate.post(
-        "/service-requests",
-        serviceRequestsData,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axiosPrivate.get(`/service-requests/${id}`);
+      return Promise.resolve(response.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+
+  const create = async (data) => {
+    try {
+      const response = await axiosPrivate.post("/service-requests", data, {
+        withCredentials: true,
+      });
 
       return Promise.resolve(response.data);
     } catch (error) {
@@ -29,15 +34,11 @@ const useServiceRequestsService = () => {
     }
   };
 
-  const update = async (id, serviceRequestData) => {
+  const update = async (id, data) => {
     try {
-      const response = await axiosPrivate.put(
-        `/service-requests/${id}`,
-        serviceRequestData,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axiosPrivate.put(`/service-requests/${id}`, data, {
+        withCredentials: true,
+      });
 
       return Promise.resolve(response.data);
     } catch (error) {
@@ -59,28 +60,11 @@ const useServiceRequestsService = () => {
     }
   };
 
-  const updateOdometerReading = async (id, odometerReading) => {
-    try {
-      const response = await axiosPrivate.put(
-        `/service-requests/${id}/update-odometer-reading`,
-        odometerReading,
-        {
-          withCredentials: true,
-        }
-      );
-
-      return Promise.resolve(response.data);
-    } catch (error) {
-      if (error.response?.status === 400)
-        return Promise.reject(error.response.data.errors);
-    }
-  };
-
-  const assignInspector = async (id, inspectorId) => {
+  const assignInspector = async (id, data) => {
     try {
       const response = await axiosPrivate.put(
         `/service-requests/${id}/assign-inspector`,
-        inspectorId,
+        data,
         {
           withCredentials: true,
         }
@@ -93,15 +77,44 @@ const useServiceRequestsService = () => {
     }
   };
 
-  const accept = async (id) => {
+  const accept = async (id, data) => {
     try {
       const response = await axiosPrivate.put(
         `/service-requests/${id}/accept`,
+        data,
         {
           withCredentials: true,
         }
       );
 
+      return Promise.resolve(response.data);
+    } catch (error) {
+      if (error.response?.status === 400)
+        return Promise.reject(error.response.data.errors);
+    }
+  };
+
+  const addFaults = async (id, data) => {
+    try {
+      const response = await axiosPrivate.post(
+        `service-requests/${id}/faults`,
+        { faults: data },
+        { withCredentials: true }
+      );
+      return Promise.resolve(response.data);
+    } catch (error) {
+      if (error.response?.status === 400)
+        return Promise.reject(error.response.data.errors);
+    }
+  };
+
+  const deleteFaults = async (id, data) => {
+    try {
+      const response = await axiosPrivate.delete(
+        `/service-requests/${id}/faults`,
+        { data },
+        { withCredentials: true }
+      );
       return Promise.resolve(response.data);
     } catch (error) {
       if (error.response?.status === 400)
@@ -111,12 +124,14 @@ const useServiceRequestsService = () => {
 
   return {
     getAll,
+    getById,
     create,
     update,
     destroy,
-    updateOdometerReading,
     assignInspector,
     accept,
+    addFaults,
+    deleteFaults,
   };
 };
 

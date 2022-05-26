@@ -6,13 +6,14 @@ const DepartmentModel = require("../models").Department;
 const FaultModel = require("../models").Fault;
 const validator = require("validator");
 const { sequelize } = require("../models");
-const { Transaction } = require("sequelize");
+const _ = require("lodash");
 
 module.exports = {
   // Find all service requests
   findAll: async (req, res, next) => {
     try {
       const serviceRequest = await ServiceRequestModel.findAll({
+        order: [["createdAt", "DESC"]],
         include: [
           {
             model: EmployeeModel,
@@ -28,6 +29,7 @@ module.exports = {
           },
           {
             model: FaultModel,
+            as: "faults",
           },
         ],
       });
@@ -75,37 +77,15 @@ module.exports = {
   // Create a new service request
   create: async (req, res, next) => {
     try {
-      let {
-        vehicleId = null,
-        departmentId = null,
-        driverId = null,
-        faults = null,
-        status = null,
-      } = req.body;
+      let { vehicleId = null, departmentId = null, driverId = null } = req.body;
 
-      const result = await sequelize.transaction(async (t) => {
-        const serviceRequest = await ServiceRequestModel.create(
-          {
-            vehicleId,
-            departmentId,
-            driverId,
-            status: status || undefined,
-          },
-          { transaction: t }
-        );
-        const faultObjects = faults.map((fault) => ({
-          description: fault.description,
-          serviceRequestId: serviceRequest.id,
-          type: "initial",
-        }));
-        await FaultModel.bulkCreate([...faultObjects], {
-          validate: true,
-          transaction: t,
-        });
-        return serviceRequest;
+      const serviceRequest = await ServiceRequestModel.create({
+        vehicleId,
+        departmentId,
+        driverId,
       });
 
-      res.status(201).json(result.id);
+      res.status(201).json(serviceRequest.id);
     } catch (error) {
       if (
         error.name === "SequelizeValidationError" ||
@@ -127,7 +107,8 @@ module.exports = {
       let { id } = req.params;
       if (isNaN(id)) return next();
 
-      let { vehicleId, departmentId, driverId, status } = req.body;
+      let { vehicleId, departmentId, driverId, status, odometerReading } =
+        req.body;
 
       const serviceRequest = await ServiceRequestModel.findByPk(id);
 
@@ -143,6 +124,7 @@ module.exports = {
         departmentId,
         driverId,
         status,
+        odometerReading,
       });
 
       res.status(201).json(serviceRequest.id);
@@ -159,41 +141,11 @@ module.exports = {
       }
 
       if (error.name === "NoChangesDetectedError")
-        return res.status(200).json({ message: "user not updated" });
+        return res.status(200).json({ message: "service request not updated" });
 
       next(error);
     }
   },
-
-  // update faults
-  // updateFaults: async (req, res, next) => {
-  //   try {
-
-  //     let { id } = req.params;
-  //     if (isNaN(id)) return next();
-
-  //     let { faults = null } = req.body;
-
-  //     const serviceRequest = await ServiceRequestModel.findByPk(id);
-
-  //     if (!serviceRequest) return res.sendStatus(404);
-
-  //     if (serviceRequest.status !== "draft")
-  //       return res
-  //         .status(400)
-  //         .json({ errors: { message: "Service Request cannot be updated" } });
-
-  //     const result = await sequelize.transaction(async (t) => {
-
-  //       faults.forEach(fault => await FaultModel.update({where: {id: fault.id}, description: fault.description}, { transaction: t }));
-  //       return true;
-  //     })
-
-  //   } catch(error) {
-
-  //     next(error)
-  //   }
-  // },
 
   // Delete service request
   delete: async (req, res, next) => {
@@ -206,15 +158,12 @@ module.exports = {
       if (serviceRequest.status !== "draft")
         return res
           .status(400)
-          .json({ errors: { message: "Service Request cannot be updated" } });
+          .json({ errors: { message: "Service Request cannot be deleted" } });
 
       const result = await sequelize.transaction(async (t) => {
-        const sr = await serviceRequest.destroy({ transaction: t });
-        await FaultModel.destroy(
-          { where: { serviceRequestId: id } },
-          { transaction: t }
-        );
-        return sr;
+        await serviceRequest.setFaults(null, { transaction: t });
+        await serviceRequest.destroy({ transaction: t });
+        return true;
       });
 
       res.sendStatus(204);
@@ -228,33 +177,6 @@ module.exports = {
     try {
       const count = await ServiceRequestModel.count();
       res.status(200).json(count);
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  // set odometer reading
-  updateOdometerReading: async (req, res, next) => {
-    try {
-      let { id } = req.params;
-      if (isNaN(id)) return next();
-
-      let { odometerReading = null } = req.body;
-
-      // if (!odometerReading)
-      //   return res.status(400).json({
-      //     errors: {
-      //       path: "odometerReading",
-      //       message: "Odometer Reading can't be empty",
-      //     },
-      //   });
-
-      const serviceRequest = await ServiceRequestModel.findByPk(id);
-
-      if (!serviceRequest) return res.sendStatus(404);
-
-      await serviceRequest.update({ odometerReading });
-      res.status(201).json(serviceRequest.id);
     } catch (error) {
       next(error);
     }
@@ -303,10 +225,115 @@ module.exports = {
     try {
       let { id } = req.params;
       if (isNaN(id)) return next();
+
+      let { odometerReading = null } = req.body;
+
+      if (!odometerReading)
+        return res.status(400).json({
+          errors: {
+            path: "odometerReading",
+            message: "Odometer Reading is required",
+          },
+        });
+
       const serviceRequest = await ServiceRequestModel.findByPk(id);
       if (!serviceRequest) return res.sendStatus(404);
 
-      await serviceRequest.update({ status: "accepted" });
+      await serviceRequest.update({ odometerReading, status: "accepted" });
+      res.status(201).json(serviceRequest.id);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // add faults
+  addFaults: async (req, res, next) => {
+    try {
+      let { id } = req.params;
+      if (isNaN(id)) return next();
+
+      let { faults } = req.body;
+
+      if (
+        !faults ||
+        !Array.isArray(faults) ||
+        faults.length === 0 ||
+        faults.some((fault) => typeof fault !== "string")
+      )
+        return res.status(400).json({
+          errors: {
+            path: "faults",
+            message:
+              "Faults are required and must be an array of atleast one string value",
+          },
+        });
+
+      const serviceRequest = await ServiceRequestModel.findByPk(id);
+      if (!serviceRequest)
+        return res
+          .status(400)
+          .json({ errors: { message: "Service Request does not exist" } });
+
+      if (serviceRequest.status !== "draft")
+        return res.status(400).json({
+          errors: {
+            message:
+              "Can't add faults to a service request that is not in draft status",
+          },
+        });
+
+      await FaultModel.bulkCreate(
+        faults.map((fault) => ({
+          description: fault,
+          serviceRequestId: serviceRequest.id,
+        }))
+      );
+
+      res.status(201).json(serviceRequest.id);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // delate faults
+  deleteFaults: async (req, res, next) => {
+    try {
+      let { id } = req.params;
+      if (isNaN(id)) return next();
+
+      let { faults } = req.body;
+      console.log(req.body);
+
+      if (
+        !faults ||
+        !Array.isArray(faults) ||
+        faults.length === 0 ||
+        faults.some((fault) => typeof fault !== "number")
+      )
+        return res.status(400).json({
+          errors: {
+            path: "faults",
+            message:
+              "Faults are required and must be an array of integer values and must contain atleast one fault id",
+          },
+        });
+
+      const serviceRequest = await ServiceRequestModel.findByPk(id);
+      if (!serviceRequest)
+        return res
+          .status(400)
+          .json({ errors: { message: "Service Request does not exist" } });
+
+      if (serviceRequest.status !== "draft")
+        return res.status(400).json({
+          errors: {
+            message:
+              "Can't delete faults to a service request that is not in draft status",
+          },
+        });
+
+      await serviceRequest.removeFaults(faults);
+
       res.status(201).json(serviceRequest.id);
     } catch (error) {
       next(error);

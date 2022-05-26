@@ -277,8 +277,8 @@ function ViewWorkOrder() {
                 </Text>
               </Group>
               <Group position="apart" sx={{ width: "100%" }}>
-                <Text size="sm">Work Type</Text>
-                <Text weight={600}>{workOrder.workType}</Text>
+                <Text size="sm">Work Department</Text>
+                <Text weight={600}>{workOrder.workDepartment}</Text>
               </Group>
               <Group position="apart" sx={{ width: "100%" }}>
                 <Text size="sm">Driver</Text>
@@ -328,7 +328,7 @@ function ViewWorkOrder() {
               </Group>
             </Stack>
           </Card>
-          <Card sx={{ height: "fit-content" }}>
+          {/* <Card sx={{ height: "fit-content" }}>
             <Card.Section>
               <Title
                 order={5}
@@ -413,7 +413,7 @@ function ViewWorkOrder() {
                 Update Work Order Faults
               </Button>
             )}
-          </Card>
+          </Card> */}
         </SimpleGrid>
       </Container>
     </>

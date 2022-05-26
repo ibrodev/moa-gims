@@ -1,34 +1,12 @@
-import {
-  ActionIcon,
-  Box,
-  Button,
-  Divider,
-  Group,
-  PasswordInput,
-  Select,
-  Text,
-  TextInput,
-} from "@mantine/core";
+import { Box, Button, Group, Select, Text, TextInput } from "@mantine/core";
 import { formList, useForm, zodResolver } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { forwardRef, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Check,
-  Id,
-  Key,
-  Plus,
-  Trash,
-  User,
-  UserCircle,
-  X,
-} from "tabler-icons-react";
+import { Check, Trash } from "tabler-icons-react";
 import { z } from "zod";
 import useDepartmentsService from "../../../hooks/services/useDepartmentsService";
 import useDriversService from "../../../hooks/services/useDriversService";
-import useEmployeesService from "../../../hooks/services/useEmployeesService";
 import useServiceRequestsService from "../../../hooks/services/useServiceRequestsService";
-import useUsersService from "../../../hooks/services/useUsersService";
 import useVehiclesService from "../../../hooks/services/useVehiclesService";
 
 interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
@@ -126,41 +104,8 @@ function CreateServiceRequest({ setNewServiceRequest }: any) {
       vehicleId: "",
       driverId: "",
       departmentId: "",
-      faults: formList([{ description: "" }]),
     },
   });
-
-  const fields = form.values.faults.map((_, index) => (
-    <Group
-      key={index}
-      spacing="xs"
-      position="apart"
-      styles={{
-        root: {
-          alignItems: "end",
-        },
-        child: { "&:first-child": { flexGrow: "1 !important" } },
-      }}
-    >
-      <TextInput
-        required
-        label="Description"
-        placeholder="description"
-        {...form.getListInputProps("faults", index, "description")}
-        size="md"
-        styles={{}}
-      />
-      <Button
-        color="red"
-        size="md"
-        style={{ padding: "0 .8rem" }}
-        disabled={index === 0}
-        onClick={() => form.removeListItem("faults", index)}
-      >
-        <Trash size={16} />
-      </Button>
-    </Group>
-  ));
 
   useEffect(() => {
     fetchVehicles();
@@ -231,26 +176,6 @@ function CreateServiceRequest({ setNewServiceRequest }: any) {
           searchable
           data={departments}
         />
-
-        <Divider
-          my="sm"
-          label="Faults"
-          labelPosition="center"
-          styles={{
-            label: { color: "black", fontSize: "1rem" },
-          }}
-        />
-
-        {/* {fields.length > 0 ? <Text>Faults</Text> : <Text>No one here...</Text>} */}
-        {fields}
-        <ActionIcon
-          variant="filled"
-          color="green"
-          mt="xs"
-          onClick={() => form.addListItem("faults", { description: "" })}
-        >
-          <Plus size={16} />
-        </ActionIcon>
 
         <Button size="md" mt={20} type="submit" loading={loading}>
           Create Service Request

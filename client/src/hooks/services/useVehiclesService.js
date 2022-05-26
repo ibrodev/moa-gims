@@ -12,6 +12,17 @@ const useVehiclesService = () => {
     }
   };
 
+  const getTypes = async () => {
+    try {
+      const response = await axiosPrivate.get("/vehicles/types", {
+        withCredentials: true,
+      });
+      return Promise.resolve(response.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+
   const create = async (VehicleData) => {
     try {
       const response = await axiosPrivate.post("/vehicles", VehicleData, {
@@ -51,7 +62,7 @@ const useVehiclesService = () => {
   //   }
   // };
 
-  return { getAll, create, update };
+  return { getAll, create, update, getTypes };
 };
 
 export default useVehiclesService;

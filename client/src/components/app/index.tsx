@@ -19,6 +19,7 @@ import ViewWorkOrder from "../pages/work-orders/ViewWorkOrder";
 import PrintLayout from "../layouts/print";
 import PrintWorkOrder from "../pages/work-orders/PrintWorkOrder";
 import PrintSparePartListing from "../pages/work-orders/PrintSparePartListing";
+import ViewServiceRequest from "../pages/service-requests/ViewServiceRequest";
 
 function App() {
   return (
@@ -33,6 +34,10 @@ function App() {
               <Route path="employees" element={<Employees />} />
               <Route path="departments" element={<Departments />} />
               <Route path="service-requests" element={<ServiceRequests />} />
+              <Route
+                path="service-requests/:id"
+                element={<ViewServiceRequest />}
+              />
               <Route path="work-orders" element={<WorkOrders />} />
               <Route path="work-orders/:id" element={<ViewWorkOrder />} />
               <Route path="vehicles" element={<Vehicles />} />

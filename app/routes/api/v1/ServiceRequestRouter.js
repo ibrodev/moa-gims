@@ -3,7 +3,7 @@ const ServiceRequestController = require("../../../controllers/ServiceRequestCon
 const authenticated = require("../../../middlewares/authenticated");
 const ServiceRequestRouter = express.Router();
 
-// ServiceRequestRouter.use(authenticated);
+ServiceRequestRouter.use(authenticated);
 
 // Find all service requests
 ServiceRequestRouter.get("/", ServiceRequestController.findAll);
@@ -23,12 +23,6 @@ ServiceRequestRouter.delete("/:id", ServiceRequestController.delete);
 // Count service requests
 ServiceRequestRouter.get("/count", ServiceRequestController.count);
 
-// update odometer reading
-ServiceRequestRouter.put(
-  "/:id/update-odometer-reading",
-  ServiceRequestController.updateOdometerReading
-);
-
 // assign inspector
 ServiceRequestRouter.put(
   "/:id/assign-inspector",
@@ -38,7 +32,13 @@ ServiceRequestRouter.put(
 // accept service request
 ServiceRequestRouter.put("/:id/accept", ServiceRequestController.accept);
 
-// Reset user password
-// ServiceRequestRouter.put("/:id/reset-password", ServiceRequestController.resetPassword);
+// add faults
+ServiceRequestRouter.post("/:id/faults", ServiceRequestController.addFaults);
+
+// delete faults
+ServiceRequestRouter.delete(
+  "/:id/faults",
+  ServiceRequestController.deleteFaults
+);
 
 module.exports = ServiceRequestRouter;

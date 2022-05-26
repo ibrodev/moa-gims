@@ -1,13 +1,31 @@
 const VehicleModel = require("../models").Vehicle;
+const VehicleTypeModel = require("../models").VehicleType;
 const EmployeeModel = require("../models").Employee;
 const validator = require("validator");
+const { sequelize } = require("../models");
 
 module.exports = {
   // Find all vehicles
   findAll: async (req, res, next) => {
     try {
-      const vehicles = await VehicleModel.findAll();
+      const vehicles = await VehicleModel.findAll({
+        include: [
+          {
+            model: VehicleTypeModel,
+            as: "vehicleType",
+          },
+        ],
+      });
       res.status(200).json(vehicles);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  findTypes: async (req, res, next) => {
+    try {
+      const vehicleTypes = await VehicleTypeModel.findAll();
+      res.status(200).json(vehicleTypes);
     } catch (error) {
       next(error);
     }
@@ -19,7 +37,14 @@ module.exports = {
       let { id } = req.params;
       if (isNaN(id)) return next();
 
-      const vehicle = await VehicleModel.findByPk(id);
+      const vehicle = await VehicleModel.findByPk(id, {
+        include: [
+          {
+            model: VehicleTypeModel,
+            as: "vehicleType",
+          },
+        ],
+      });
 
       if (!vehicle) return res.sendStatus(404);
 
@@ -40,28 +65,54 @@ module.exports = {
         engineCapacity = null,
         engineType = null,
         chassisNo = null,
+        vehicleTypeId = null,
+        project = null,
       } = req.body;
+
+      if (typeof vehicleTypeId === "string")
+        vehicleTypeId = validator.escape(validator.trim(vehicleTypeId));
+      if (!vehicleTypeId)
+        throw {
+          err: { path: "vehicleTypeId", message: "Vehicle Type is Required" },
+        };
 
       plateNo = plateNo && validator.escape(validator.trim(plateNo));
       manufacturer =
         manufacturer && validator.escape(validator.trim(manufacturer));
       model = model && validator.escape(validator.trim(model));
       engineNo = engineNo && validator.escape(validator.trim(engineNo));
-      engineCapacity =
-        engineCapacity && validator.escape(validator.trim(engineCapacity));
       engineType = engineType && validator.escape(validator.trim(engineType));
       chassisNo = chassisNo && validator.escape(validator.trim(chassisNo));
 
-      const vehicle = await VehicleModel.create({
-        plateNo,
-        manufacturer,
-        model,
-        engineNo,
-        engineCapacity,
-        engineType,
-        chassisNo,
+      const result = await sequelize.transaction(async (t) => {
+        if (
+          typeof vehicleTypeId === "string" &&
+          isNaN(parseInt(vehicleTypeId))
+        ) {
+          let { id } = await VehicleTypeModel.create(
+            { name: vehicleTypeId },
+            { transaction: t }
+          );
+          vehicleTypeId = id;
+        }
+        const vehicle = await VehicleModel.create(
+          {
+            plateNo,
+            manufacturer,
+            model,
+            engineNo,
+            engineCapacity,
+            engineType,
+            chassisNo,
+            vehicleTypeId,
+            project,
+          },
+          { transaction: t }
+        );
+        return vehicle;
       });
-      res.status(201).json(vehicle.id);
+
+      res.status(201).json(result.id);
     } catch (error) {
       if (
         error.name === "SequelizeValidationError" ||
@@ -69,10 +120,18 @@ module.exports = {
       ) {
         return res.status(400).json({
           errors: error.errors?.map((err) => {
-            return { path: err.path, message: err.message };
+            return {
+              path: err.path === "name" ? "vehicleType" : err.path,
+              message: err.message,
+            };
           }),
         });
       }
+      if (error.name === "SequelizeForeignKeyConstraintError")
+        return res
+          .status(400)
+          .json({ path: "vehicleTypeId", message: "Invalid Vehicle Type Id" });
+      if (error.err) return res.status(400).json(error.err);
       next(error);
     }
   },
@@ -91,7 +150,12 @@ module.exports = {
         engineCapacity = null,
         engineType = null,
         chassisNo = null,
+        vehicleTypeId = null,
+        project = null,
       } = req.body;
+
+      if (typeof vehicleTypeId === "string")
+        vehicleTypeId = validator.escape(validator.trim(vehicleTypeId));
 
       plateNo = plateNo && validator.escape(validator.trim(plateNo));
       manufacturer =
@@ -106,17 +170,33 @@ module.exports = {
       const vehicle = await VehicleModel.findByPk(id);
       if (!vehicle) return res.sendStatus(404);
 
-      await vehicle.update({
-        plateNo: plateNo || undefined,
-        manufacturer: manufacturer || undefined,
-        model: model || undefined,
-        engineNo: engineNo || undefined,
-        engineCapacity: engineCapacity || undefined,
-        engineType: engineType || undefined,
-        chassisNo: chassisNo || undefined,
+      const result = await sequelize.transaction(async (t) => {
+        if (
+          typeof vehicleTypeId === "string" &&
+          parseInt(vehicleTypeId) === NaN
+        ) {
+          let { id } = await VehicleTypeModel.create(
+            { name: vehicleTypeId },
+            { transaction: t }
+          );
+          vehicleTypeId = id;
+        }
+        const updatedVehicle = await vehicle.update({
+          plateNo: plateNo || undefined,
+          manufacturer: manufacturer || undefined,
+          model: model || undefined,
+          engineNo: engineNo || undefined,
+          engineCapacity: engineCapacity || undefined,
+          engineType: engineType || undefined,
+          chassisNo: chassisNo || undefined,
+          vehicleTypeId: vehicleTypeId || undefined,
+          project: project || undefined,
+        });
+
+        return updatedVehicle;
       });
 
-      res.status(201).json(vehicle.id);
+      res.status(201).json(result.id);
     } catch (error) {
       if (
         error.name === "SequelizeValidationError" ||
@@ -124,7 +204,10 @@ module.exports = {
       ) {
         return res.status(400).json({
           errors: error.errors?.map((err) => {
-            return { path: err.path, message: err.message };
+            return {
+              path: err.path === "name" ? "vehicleType" : err.path,
+              message: err.message,
+            };
           }),
         });
       }
@@ -132,6 +215,11 @@ module.exports = {
       if (error.name === "NoChangesDetectedError")
         return res.status(200).json({ message: "user not updated" });
 
+      if (error.name === "SequelizeForeignKeyConstraintError")
+        return res
+          .status(400)
+          .json({ path: "vehicleTypeId", message: "Invalid Vehicle Type Id" });
+      if (error.err) return res.status(400).json(error.err);
       next(error);
     }
   },

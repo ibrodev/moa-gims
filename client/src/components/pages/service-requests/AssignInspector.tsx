@@ -1,23 +1,12 @@
-import {
-  Box,
-  Button,
-  Group,
-  PasswordInput,
-  Select,
-  Text,
-  TextInput,
-} from "@mantine/core";
+import { Box, Button, Group, Select, Text } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import { randomId } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { forwardRef, useEffect, useState } from "react";
-import { Check, Id, Key, User, UserCircle } from "tabler-icons-react";
+import { Check } from "tabler-icons-react";
 import { z } from "zod";
-import useDepartmentsService from "../../../hooks/services/useDepartmentsService";
-import useDriversService from "../../../hooks/services/useDriversService";
 import useEmployeesService from "../../../hooks/services/useEmployeesService";
 import useServiceRequestsService from "../../../hooks/services/useServiceRequestsService";
-import useUsersService from "../../../hooks/services/useUsersService";
-import useVehiclesService from "../../../hooks/services/useVehiclesService";
 
 interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
   label: string;
@@ -39,7 +28,7 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
   )
 );
 
-function AssignInspector({ setNewServiceRequest, data, setActionDrawer }: any) {
+function AssignInspector({ setNewServiceRequest, data, closeModal }: any) {
   const [inspectors, setInspectors] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -98,8 +87,8 @@ function AssignInspector({ setNewServiceRequest, data, setActionDrawer }: any) {
         message: `Inspector assigned successfully`,
         icon: <Check size={18} />,
       });
-      setNewServiceRequest(id);
-      setActionDrawer((prev: any) => ({ ...prev, opened: false }));
+      setNewServiceRequest(randomId());
+      closeModal();
     } catch (errors: any) {
       interface errorInterface {
         [key: string]: string;

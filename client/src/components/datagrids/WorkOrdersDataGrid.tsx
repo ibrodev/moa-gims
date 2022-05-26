@@ -163,7 +163,7 @@ const WorkOrdersDataGrid = ({ newWorkOrder, setActionDrawer }: any) => {
             inspectorId: workOrder.ServiceRequest?.inspectorId,
             "Start Date": workOrder.startDate,
             "End Date": workOrder.endDate,
-            "Work Type": workOrder.workType,
+            "Work Department": workOrder.workDepartment,
             Expert: `${workOrder.Employee?.firstName} ${workOrder.Employee?.lastName}`,
             expertId: workOrder.Employee.id,
             "Created At": workOrder.createdAt,

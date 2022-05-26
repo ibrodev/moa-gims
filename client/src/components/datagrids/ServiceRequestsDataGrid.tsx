@@ -1,22 +1,15 @@
 import {
   ActionIcon,
   Box,
-  Button,
   Center,
   Group,
-  List,
   Loader,
-  Menu,
-  Modal,
-  Select,
   Text,
-  TextInput,
-  ThemeIcon,
   Title,
   Tooltip,
   UnstyledButton,
 } from "@mantine/core";
-import { forwardRef, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Column,
   Hooks,
@@ -26,17 +19,15 @@ import {
   useTable,
 } from "react-table";
 import {
+  AlertCircle,
   AlertTriangle,
   Check,
   ChevronDown,
   ChevronUp,
-  CircleCheck,
+  Eye,
   MoodSad,
-  Pencil,
   Selector,
-  Send,
   Trash,
-  UserCheck,
 } from "tabler-icons-react";
 import moment from "moment";
 import useTableComponent from "../ui/table";
@@ -45,111 +36,80 @@ import { showNotification } from "@mantine/notifications";
 import useServiceRequestsService from "../../hooks/services/useServiceRequestsService";
 import useAuth from "../../hooks/useAuth";
 import { useModals } from "@mantine/modals";
-import useEmployeesService from "../../hooks/services/useEmployeesService";
-import { useForm } from "@mantine/form";
 import DataGridPagination from "./DataGridPagination";
 import DataGridSetPageSize from "./DataGridSetPageSize";
+import { Link, useNavigate } from "react-router-dom";
 
 const ServiceRequestsDataGrid = ({
   newServiceRequest,
   setActionDrawer,
 }: any) => {
   const [serviceRequests, setServiceRequests] = useState([]);
-  const [deleted, setDeleted] = useState(null);
-  const [deleteServiceRequest, setDeleteServiceRequest] = useState({
-    opened: false,
-    id: null,
-  });
+  const [crudAction, setCrudAction] = useState<number | null>(null);
+
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
-  const { getAll, destroy, update, accept } = useServiceRequestsService();
+  const { getAll, destroy } = useServiceRequestsService();
 
   const { auth } = useAuth();
+  const navigate = useNavigate();
   const modals = useModals();
-
-  const openSubmitModal = (id: number) =>
-    modals.openConfirmModal({
-      title: "Submit Service Request",
-      centered: true,
-      children: (
-        <Text size="sm">
-          Are you sure you want to submit this service request?
-        </Text>
-      ),
-      labels: { confirm: "Submit Service Request", cancel: "Cancel" },
-      onCancel: () => {},
-      onConfirm: () => handleServiceRequestSubmit(id),
-    });
-
-  const openAcceptModal = (data: any) =>
-    modals.openConfirmModal({
-      title: "Accept Service Request",
-      centered: true,
-      children: (
-        <>
-          <Text mb={4}>
-            Are you sure you want to accept this service request?
-          </Text>
-          {!data["Odometer Reading"] && (
-            <Text size="sm" color="yellow">
-              <Text size="xs" weight="700" transform="uppercase">
-                Warning
-              </Text>
-              This SR Odometer Reading value is null, please make sure to update
-              it latter otherwise odometer reading value will not be available
-              for Work Orders which will be created under this SR
-            </Text>
-          )}
-        </>
-      ),
-      labels: { confirm: "Accept Service Request", cancel: "Cancel" },
-      onCancel: () => {},
-      onConfirm: () => handleServiceRequestAccept(data.id),
-    });
 
   const Table = useTableComponent();
 
-  const handleServiceRequestAccept = async (id: any) => {
-    try {
-      await accept(id);
-      setDeleted(id);
-      showNotification({
-        title: "Service Request Accepted",
-        message: `Service Request with id ${deleted} accepted successfully`,
-        icon: <Check size={18} />,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  const deleteModal = (id: number) => {
+    const deleteModalId = modals.openConfirmModal({
+      title: (
+        <Title
+          order={3}
+          sx={{
+            fontWeight: 400,
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+          }}
+          mb={10}
+        >
+          <AlertCircle color="red" />
+          Delete Service Request {id}
+        </Title>
+      ),
+      centered: true,
+      children: (
+        <Text size="md" mb={30}>
+          Deleting this Service Request will permanently remove it from the
+          database, this cannot be undone.
+        </Text>
+      ),
+      closeOnConfirm: false,
+      labels: {
+        confirm: deleting ? "Deleting..." : "Delete",
+        cancel: "No don't delete it",
+      },
+      confirmProps: { color: "red", loading: deleting },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => handleServiceRequestDelete(id, deleteModalId),
+    });
   };
 
-  const handleServiceRequestDelete = async () => {
+  const handleServiceRequestDelete = async (id: number, modalId: any) => {
     try {
-      await destroy(deleteServiceRequest.id);
-      setDeleted(deleteServiceRequest.id);
+      setDeleting(true);
+      await destroy(id);
+      setCrudAction(Math.random());
+
+      modals.closeModal(modalId);
 
       showNotification({
         title: "Service Request Deleted",
-        message: `Service Request with id ${deleted} deleted successfully`,
-        icon: <Check size={18} />,
-      });
-      setDeleteServiceRequest({ opened: false, id: null });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleServiceRequestSubmit = async (serviceRequestId: any) => {
-    try {
-      await update(serviceRequestId, { status: "submitted" });
-      setDeleted(serviceRequestId);
-      showNotification({
-        title: "Service Request Submitted",
-        message: `Service Request with id ${deleted} submitted successfully`,
+        message: `Service Request with id ${id} deleted successfully`,
         icon: <Check size={18} />,
       });
     } catch (error) {
       console.log(error);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -163,18 +123,12 @@ const ServiceRequestsDataGrid = ({
             Vehicle: serviceRequest.Vehicle.plateNo,
             Department: serviceRequest.Department?.name,
             Driver: `${serviceRequest.Driver?.firstName} ${serviceRequest.Driver?.lastName}`,
-            DriverObj: serviceRequest.Driver,
-            Faults: serviceRequest.Faults,
-            inspectorId: serviceRequest.inspectorId,
-            Inspector: serviceRequest.inspectorId
-              ? `${serviceRequest.Employee?.firstName} ${serviceRequest.Employee?.lastName}`
-              : "Unassigned",
-            "Odometer Reading": serviceRequest.odometerReading,
             Status: serviceRequest.status,
             "Created At": serviceRequest.createdAt,
-            DriverId: serviceRequest.Driver?.id,
-            VehicleId: serviceRequest.Vehicle?.id,
-            DepartmentId: serviceRequest.Department?.id,
+            inspectorId: serviceRequest.inspectorId,
+            vehicleId: serviceRequest.vehicleId,
+            driverId: serviceRequest.driverId,
+            departmentId: serviceRequest.departmentId,
           };
         })
         .filter((serviceRequest: any) => {
@@ -204,7 +158,7 @@ const ServiceRequestsDataGrid = ({
 
   useEffect(() => {
     fetchServiceRequests();
-  }, [newServiceRequest, deleted]);
+  }, [newServiceRequest, crudAction]);
 
   const data = useMemo(() => [...serviceRequests], [serviceRequests]);
   const columns: Array<Column> = useMemo(
@@ -219,25 +173,15 @@ const ServiceRequestsDataGrid = ({
                   Cell: ({ value }: any) => moment(value).fromNow(),
                 };
 
-              if (key === "Faults")
-                return {
-                  Header: key,
-                  accessor: key,
-                  Cell: ({ value }: any) => (
-                    <List size="sm">
-                      {value.map((problem: any) => (
-                        <List.Item>{problem.description}</List.Item>
-                      ))}
-                    </List>
-                  ),
-                };
-              return { Header: key === "id" ? "#SR id" : key, accessor: key };
+              return {
+                Header: key === "id" ? "#SR Number" : key,
+                accessor: key,
+              };
             })
-            .filter((column) => column.Header !== "DriverObj")
             .filter((column) => column.Header !== "inspectorId")
-            .filter((column) => column.Header !== "DriverId")
-            .filter((column) => column.Header !== "VehicleId")
-            .filter((column) => column.Header !== "DepartmentId")
+            .filter((column) => column.Header !== "vehicleId")
+            .filter((column) => column.Header !== "driverId")
+            .filter((column) => column.Header !== "departmentId")
         : [],
     [serviceRequests]
   );
@@ -249,96 +193,25 @@ const ServiceRequestsDataGrid = ({
         id: "Actions",
         Header: "Actions",
         Cell: ({ row }) => (
-          <Group spacing="sm">
-            {auth.userRole === "recorder" && row.values.Status === "draft" ? (
-              <>
-                <Tooltip label="edit" withArrow color="blue">
-                  <ActionIcon
-                    variant="transparent"
-                    color="blue"
-                    onClick={() =>
-                      setActionDrawer({
-                        opened: true,
-                        title: "Update Service Request Form",
-                        action: "update",
-                        data: row.original,
-                      })
-                    }
-                  >
-                    <Pencil size={18} />
-                  </ActionIcon>
-                </Tooltip>
-                <Menu position="bottom" placement="end" gutter={-6} withArrow>
-                  <Menu.Item
-                    icon={<Send size={18} />}
-                    onClick={() => openSubmitModal(row.values.id)}
-                  >
-                    Submit Service Request
-                  </Menu.Item>
-                  <Menu.Item
-                    icon={<Trash size={18} />}
-                    color="red"
-                    onClick={() =>
-                      setDeleteServiceRequest({
-                        opened: true,
-                        id: row.values.id,
-                      })
-                    }
-                  >
-                    Delete Service Request
-                  </Menu.Item>
-                </Menu>
-              </>
-            ) : auth.userRole === "team-leader" &&
-              row.values.Status === "submitted" ? (
-              <Tooltip label="assign inspector" withArrow color="blue">
+          <Group spacing="xs">
+            <Tooltip label="View Service Request" withArrow>
+              <ActionIcon
+                component={Link}
+                to={`/service-requests/${row.values.id}`}
+                variant="transparent"
+              >
+                <Eye size={18} color="blue" />
+              </ActionIcon>
+            </Tooltip>
+            {auth.userRole === "recorder" && row.values.Status === "draft" && (
+              <Tooltip label="Delete Service Request" withArrow>
                 <ActionIcon
                   variant="transparent"
-                  color="blue"
-                  onClick={() =>
-                    setActionDrawer({
-                      opened: true,
-                      title: "Assign Inspector Form",
-                      action: "assignInspector",
-                      data: row.original,
-                    })
-                  }
+                  onClick={() => deleteModal(row.values.id)}
                 >
-                  <UserCheck size={18} />
+                  <Trash size={18} color="red" />
                 </ActionIcon>
               </Tooltip>
-            ) : auth.userRole === "inspector" ? (
-              <>
-                <Tooltip label="update odometer reading" withArrow color="blue">
-                  <ActionIcon
-                    variant="transparent"
-                    color="blue"
-                    onClick={() =>
-                      setActionDrawer({
-                        opened: true,
-                        title: "Update Odometer Reading Form",
-                        action: "updateOdometerReading",
-                        data: row.original,
-                      })
-                    }
-                  >
-                    <Pencil size={18} />
-                  </ActionIcon>
-                </Tooltip>
-                {row.values.Status !== "accepted" && (
-                  <Tooltip label="accept this SR" withArrow color="blue">
-                    <ActionIcon
-                      variant="transparent"
-                      color="blue"
-                      onClick={() => openAcceptModal(row.values)}
-                    >
-                      <Check size={18} />
-                    </ActionIcon>
-                  </Tooltip>
-                )}
-              </>
-            ) : (
-              <></>
             )}
           </Group>
         ),
@@ -385,7 +258,7 @@ const ServiceRequestsDataGrid = ({
           padding: "100px",
         }}
       >
-        <Text color="gray">Loading users</Text>{" "}
+        <Text color="gray">Loading Service Requests</Text>{" "}
         <Loader variant="dots" size={50} />{" "}
       </Box>
     );
@@ -406,44 +279,6 @@ const ServiceRequestsDataGrid = ({
 
   return (
     <>
-      <Modal
-        centered
-        size="sm"
-        opened={deleteServiceRequest.opened}
-        onClose={() =>
-          setDeleteServiceRequest((prev) => ({ ...prev, opened: false }))
-        }
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-          mb={40}
-        >
-          <Trash size={30} color="red" />
-          <Title order={4} style={{ color: "red" }} mt={4}>
-            You are about to delete a service request
-          </Title>
-          <Text>This will permanently delete the service request</Text>
-          <Text>Are you sure?</Text>
-        </Box>
-        <Group spacing="xs" position="right">
-          <Button
-            variant="subtle"
-            color="dark"
-            onClick={() =>
-              setDeleteServiceRequest((prev) => ({ ...prev, opened: false }))
-            }
-          >
-            Cancel
-          </Button>
-          <Button color="red" onClick={handleServiceRequestDelete}>
-            Delete
-          </Button>
-        </Group>
-      </Modal>
       <Group>
         <DataGridGlobalFilter
           preGlobalFilteredRows={preGlobalFilteredFlatRows}
@@ -492,27 +327,10 @@ const ServiceRequestsDataGrid = ({
             prepareRow(row);
             return (
               <Table.Row {...row.getRowProps()}>
-                {/* {console.log(row.original)} */}
                 {row.cells.map((cell: any) => {
-                  // console.log(cell.value);
-
                   return (
                     <Table.Cell {...cell.getCellProps()}>
                       {cell.render("Cell")}
-                      {cell.column.Header === "Driver" && (
-                        <Text size="xs" color="dark">
-                          {row.original.DriverObj.licenseNo}
-                        </Text>
-                      )}
-                      {cell.column.Header === "Odometer Reading" &&
-                        !!cell.value && (
-                          <Text
-                            size="xs"
-                            style={{ display: "inline", marginLeft: 2 }}
-                          >
-                            Km
-                          </Text>
-                        )}
                     </Table.Cell>
                   );
                 })}

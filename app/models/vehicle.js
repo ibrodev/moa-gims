@@ -7,8 +7,14 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
+    static associate({ VehicleType }) {
       // define association here
+      Vehicle.belongsTo(VehicleType, {
+        foreignKey: "vehicleTypeId",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+        as: "vehicleType",
+      });
     }
   }
   Vehicle.init(
@@ -51,6 +57,20 @@ module.exports = (sequelize, DataTypes) => {
           notNull: {
             args: true,
             msg: "Model is required",
+          },
+        },
+      },
+      project: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      vehicleTypeId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          notNull: {
+            args: true,
+            msg: "Vehicle type is required",
           },
         },
       },

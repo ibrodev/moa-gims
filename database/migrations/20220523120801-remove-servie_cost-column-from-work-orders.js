@@ -8,9 +8,7 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.addColumn("ServiceRequests", "serviceType", {
-      type: Sequelize.ENUM(["in-house", "out-source"]),
-    });
+    await queryInterface.removeColumn("WorkOrders", "serviceCost");
   },
 
   async down(queryInterface, Sequelize) {
@@ -21,6 +19,9 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
 
-    await queryInterface.removeColumn("ServiceRequests", "serviceType");
+    await queryInterface.addColumn("WorkOrders", "serviceCost", {
+      type: Sequelize.FLOAT,
+      allowNull: false,
+    });
   },
 };

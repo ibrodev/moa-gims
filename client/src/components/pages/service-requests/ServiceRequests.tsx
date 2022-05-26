@@ -14,7 +14,6 @@ import useAuth from "../../../hooks/useAuth";
 import ServiceRequestsDataGrid from "../../datagrids/ServiceRequestsDataGrid";
 import AssignInspector from "./AssignInspector";
 import CreateServiceRequest from "./CreateServiceRequest";
-import UpdateOdometerReading from "./UpdateOdometerReading";
 import UpdateServiceRequest from "./UpdateServiceRequest";
 
 function ServiceRequests() {
@@ -75,11 +74,7 @@ function ServiceRequests() {
                 setActionDrawer={setActionDrawer}
               />
             ) : actionDrawer.action === "updateOdometerReading" ? (
-              <UpdateOdometerReading
-                setNewServiceRequest={setNewServiceRequest}
-                data={actionDrawer.data}
-                setActionDrawer={setActionDrawer}
-              />
+              <></>
             ) : (
               <></>
             ))}

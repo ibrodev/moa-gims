@@ -1,33 +1,17 @@
-import {
-  Box,
-  Button,
-  Group,
-  NumberInput,
-  PasswordInput,
-  Select,
-  Text,
-  TextInput,
-} from "@mantine/core";
+import { TextInput } from "@mantine/core";
+import { Box, Button, NumberInput } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import { randomId } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { forwardRef, useEffect, useState } from "react";
-import { Check, Id, Key, User, UserCircle } from "tabler-icons-react";
+import { useState } from "react";
+import { Check } from "tabler-icons-react";
 import { z } from "zod";
-import useDepartmentsService from "../../../hooks/services/useDepartmentsService";
-import useDriversService from "../../../hooks/services/useDriversService";
-import useEmployeesService from "../../../hooks/services/useEmployeesService";
 import useServiceRequestsService from "../../../hooks/services/useServiceRequestsService";
-import useUsersService from "../../../hooks/services/useUsersService";
-import useVehiclesService from "../../../hooks/services/useVehiclesService";
 
-function UpdateOdometerReading({
-  setNewServiceRequest,
-  data,
-  setActionDrawer,
-}: any) {
+function AcceptServiceRequest({ setNewServiceRequest, data, closeModal }: any) {
   const [loading, setLoading] = useState(false);
 
-  const { updateOdometerReading } = useServiceRequestsService();
+  const { accept } = useServiceRequestsService();
 
   // const schema = z.object({
   //   username: z
@@ -46,22 +30,22 @@ function UpdateOdometerReading({
   const form = useForm({
     // schema: zodResolver(schema),
     initialValues: {
-      odometerReading: data["Odometer Reading"],
+      odometerReading: "",
     },
   });
 
   const handleOnSubmit = async (values: any) => {
     try {
       setLoading(true);
-      const id = await updateOdometerReading(data.id, values);
+      await accept(data.id, values);
 
       showNotification({
-        title: "Odometer Reading updated",
-        message: `Odometer Reading updated successfully`,
+        title: "Service Request Accepted",
+        message: `Service Request accepted successfully`,
         icon: <Check size={18} />,
       });
-      setNewServiceRequest(id);
-      setActionDrawer((prev: any) => ({ ...prev, opened: false }));
+      setNewServiceRequest(randomId());
+      closeModal();
     } catch (errors: any) {
       interface errorInterface {
         [key: string]: string;
@@ -82,19 +66,20 @@ function UpdateOdometerReading({
     <Box>
       <form onSubmit={form.onSubmit(handleOnSubmit)}>
         <NumberInput
+          required
           label="Odometer Reading"
           name="odometerReading"
-          placeholder="Enter Odometer Reading Number"
+          placeholder="Enter Odometer Reading"
           {...form.getInputProps("odometerReading")}
           size="md"
           hideControls
         />
         <Button size="md" mt={20} type="submit" loading={loading}>
-          Update Odometer Reading
+          Accept Service Request
         </Button>
       </form>
     </Box>
   );
 }
 
-export default UpdateOdometerReading;
+export default AcceptServiceRequest;

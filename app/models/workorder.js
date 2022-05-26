@@ -91,7 +91,7 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
-      workType: {
+      workDepartment: {
         allowNull: false,
         type: DataTypes.ENUM("Mechanical", "Electrical", "Body"),
         validate: {
@@ -114,24 +114,7 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
-      serviceCost: {
-        type: DataTypes.FLOAT,
-        validate: {
-          isFloat: {
-            args: true,
-            msg: "Service Cost must be a floating point number",
-          },
 
-          isZero(value) {
-            if (value <= 0.0)
-              throw new Error("Service Cost can't be zero or negative value");
-          },
-        },
-      },
-      completed: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,

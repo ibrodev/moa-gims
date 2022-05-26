@@ -82,7 +82,7 @@ function CreateWorkOrder({ setNewWorkOrder }: any) {
         (serviceRequest: any) =>
           serviceRequest.inspectorId === auth.user.employeeId &&
           serviceRequest.status === "accepted" &&
-          serviceRequest.Faults.some((fault: any) => !fault.workOrderId)
+          serviceRequest.faults.some((fault: any) => !fault.workOrderId)
       );
       setServiceRequests(serviceRequests);
     } catch (error) {

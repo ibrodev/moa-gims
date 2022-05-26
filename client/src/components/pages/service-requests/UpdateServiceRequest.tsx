@@ -112,9 +112,9 @@ function UpdateServiceRequest({
   const form = useForm({
     // schema: zodResolver(schema),
     initialValues: {
-      vehicleId: `${data.VehicleId}`,
-      driverId: `${data.DriverId}`,
-      departmentId: `${data.DepartmentId}`,
+      vehicleId: `${data.vehicleId}`,
+      driverId: `${data.driverId}`,
+      departmentId: `${data.departmentId}`,
     },
   });
 
