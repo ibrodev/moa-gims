@@ -122,16 +122,41 @@ const useServiceRequestsService = () => {
     }
   };
 
+  const count = async () => {
+    try {
+      const response = await axiosPrivate.get("/service-requests/count");
+      return Promise.resolve(response.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+
+  const complete = async (id) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/service-requests/${id}/complete`,
+
+        { withCredentials: true }
+      );
+      return Promise.resolve(response.data);
+    } catch (error) {
+      if (error.response?.status === 400)
+        return Promise.reject(error.response.data.errors);
+    }
+  };
+
   return {
     getAll,
     getById,
     create,
     update,
     destroy,
+    count,
     assignInspector,
     accept,
     addFaults,
     deleteFaults,
+    complete,
   };
 };
 

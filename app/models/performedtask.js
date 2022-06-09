@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      reportId: {
+      workOrderId: {
         type: DataTypes.NUMBER,
         allowNull: false,
       },
@@ -27,6 +27,9 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         type: DataTypes.TEXT,
         unique: false,
+      },
+      laborCost: {
+        type: DataTypes.FLOAT,
       },
       createdAt: {
         allowNull: false,
@@ -36,6 +39,7 @@ module.exports = (sequelize, DataTypes) => {
       updatedAt: {
         allowNull: false,
         type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
       },
     },
     {

@@ -42,7 +42,16 @@ const usePositionsService = () => {
     }
   };
 
-  return { getAll, create, update };
+  const count = async () => {
+    try {
+      const response = await axiosPrivate.get("/positions/count");
+      return Promise.resolve(response.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+
+  return { getAll, create, update, count };
 };
 
 export default usePositionsService;

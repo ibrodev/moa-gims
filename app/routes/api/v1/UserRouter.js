@@ -26,4 +26,7 @@ UserRouter.get("/count", UserController.count);
 // Reset user password
 UserRouter.put("/:id/reset-password", UserController.resetPassword);
 
+// Count all users
+UserRouter.get("/count", UserController.count);
+
 module.exports = UserRouter;

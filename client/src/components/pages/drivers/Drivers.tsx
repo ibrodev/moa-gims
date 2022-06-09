@@ -6,8 +6,9 @@ import {
   Title,
   useMantineTheme,
 } from "@mantine/core";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Plus } from "tabler-icons-react";
+import DocumentTitleContext from "../../../contexts/DocumentTitleProvider";
 import useAuth from "../../../hooks/useAuth";
 import DriversDataGrid from "../../datagrids/DriversDataGrid";
 import CreateDrivers from "./CreateDrivers";
@@ -24,6 +25,12 @@ function Drivers() {
     data: {},
   });
   const [newDriver, setNewDriver] = useState(null);
+
+  const { setTitle } = useContext(DocumentTitleContext);
+
+  useEffect(() => {
+    setTitle((prev: any) => ({ ...prev, pageTitle: "Drivers" }));
+  }, []);
 
   if (auth?.userRole !== "recorder")
     return (

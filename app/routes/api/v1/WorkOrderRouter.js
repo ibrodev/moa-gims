@@ -15,7 +15,7 @@ WorkOrderRouter.get("/:id", WorkOrderController.findById);
 WorkOrderRouter.post("/", WorkOrderController.create);
 
 // Update work order
-WorkOrderRouter.put("/:id", WorkOrderController.update);
+// WorkOrderRouter.put("/:id", WorkOrderController.update);
 
 // Delete work order
 WorkOrderRouter.delete("/:id", WorkOrderController.delete);
@@ -27,9 +27,15 @@ WorkOrderRouter.put("/:id/start", WorkOrderController.start);
 WorkOrderRouter.put("/:id/end", WorkOrderController.end);
 
 // Add additional faults to work order
-WorkOrderRouter.put("/:id/add-faults", WorkOrderController.addFaults);
+// WorkOrderRouter.put("/:id/add-faults", WorkOrderController.addFaults);
 
 // Count work orders
-// WorkOrderRouter.get("/count", WorkOrderController.count);
+WorkOrderRouter.get("/count", WorkOrderController.count);
+
+// Add Spare Parts to work order
+WorkOrderRouter.post("/:id/add-parts", WorkOrderController.addParts);
+
+// Set Work Order Complete
+WorkOrderRouter.put("/:id/complete", WorkOrderController.setComplete);
 
 module.exports = WorkOrderRouter;

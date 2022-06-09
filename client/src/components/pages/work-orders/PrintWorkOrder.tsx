@@ -1,3 +1,4 @@
+import { Table } from "@mantine/core";
 import {
   Box,
   Button,
@@ -13,6 +14,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useWorkOrdersService from "../../../hooks/services/useWorkOrdersService";
@@ -111,7 +113,11 @@ function PrintWorkOrder() {
       <Box className={classes.paper}>
         <Box className={classes.header}>
           <Text className="wo-number">
-            WONo: <span>{workOrder.id}</span>
+            WONo:{" "}
+            <span>
+              {workOrder.type === "project" ? "P" : "R"}/{workOrder.id}/
+              {moment(workOrder.createdAt).format("YYYY")}
+            </span>
           </Text>
           <Title order={2} className="header-title">
             Ministry of Agriculture
@@ -182,9 +188,9 @@ function PrintWorkOrder() {
                   </Text>
                 </Group>
                 <Group>
-                  <Text>Work Type:</Text>
+                  <Text>Work Department:</Text>
                   <Text weight={600} underline>
-                    {workOrder.workType}
+                    {workOrder.workDepartment}
                   </Text>
                 </Group>
                 <Group>
@@ -202,16 +208,42 @@ function PrintWorkOrder() {
             </SimpleGrid>
           </Box>
           <Box component="section" className="faults">
-            <Title order={5} className="section-title">
-              Initial Faults
-            </Title>
-            <Stack>
-              <List>
-                {workOrder.Faults.map((fault: any) => (
-                  <List.Item>{fault.description}</List.Item>
+            <Table
+              verticalSpacing="md"
+              sx={{
+                border: "1px solid black",
+                "& th, & td": {
+                  border: "1px solid black !important",
+                },
+
+                "@media print": {
+                  "& th, & td": {
+                    border: "3px solid black !important",
+                  },
+                },
+                "& th": {
+                  padding: "0 0 0 .3rem !important",
+                },
+              }}
+            >
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Task Description</th>
+
+                  <th>Labour Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...Array.from({ length: 15 })].map((_, index) => (
+                  <tr>
+                    <td></td>
+                    <td style={{ paddingLeft: 350 }}></td>
+                    <td></td>
+                  </tr>
                 ))}
-              </List>
-            </Stack>
+              </tbody>
+            </Table>
           </Box>
         </Box>
       </Box>

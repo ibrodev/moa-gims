@@ -121,15 +121,59 @@ const useWorkOrdersService = () => {
     }
   };
 
+  const addParts = async (id, parts) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/work-orders/${id}/add-parts`,
+        parts,
+        {
+          withCredentials: true,
+        }
+      );
+
+      return Promise.resolve(response.data);
+    } catch (error) {
+      if (error.response?.status === 400)
+        return Promise.reject(error.response.data.errors);
+    }
+  };
+
+  const setComplete = async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/work-orders/${id}/complete`,
+        data,
+        {
+          withCredentials: true,
+        }
+      );
+      return Promise.resolve(response.data);
+    } catch (error) {
+      if (error.response?.status === 400)
+        return Promise.reject(error.response.data.errors);
+    }
+  };
+
+  const count = async () => {
+    try {
+      const response = await axiosPrivate.get("/work-orders/count");
+      return Promise.resolve(response.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+
   return {
     getAll,
     getOne,
     create,
     update,
+    count,
     start,
     end,
     destroy,
-    addFaults,
+    addParts,
+    setComplete,
   };
 };
 

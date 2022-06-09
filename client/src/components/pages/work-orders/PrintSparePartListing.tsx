@@ -14,6 +14,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useWorkOrdersService from "../../../hooks/services/useWorkOrdersService";
@@ -115,7 +116,9 @@ function PrintSparePartListing() {
             Ministry of Agriculture
           </Title>
           <Title order={4} className="header-subtitle">
-            Spare Parts Listing Form for Work Order No. {workOrder.id}
+            Spare Parts Listing Form for Work Order No.{" "}
+            {workOrder.type === "project" ? "P" : "R"}/{workOrder.id}/
+            {moment(workOrder.createdAt).format("YYYY")}
           </Title>
         </Box>
         <Box className={classes.body}>
@@ -145,6 +148,12 @@ function PrintSparePartListing() {
                   </Text>
                 </Group>
                 <Group>
+                  <Text>Type:</Text>
+                  <Text weight={600} underline>
+                    {workOrder.ServiceRequest.Vehicle.vehicleType.name}
+                  </Text>
+                </Group>
+                <Group>
                   <Text>Chassis No:</Text>
                   <Text weight={600} underline>
                     {workOrder.ServiceRequest.Vehicle.chassisNo || "-"}
@@ -159,21 +168,16 @@ function PrintSparePartListing() {
               </Stack>
               <Stack className="wo-details-stack">
                 <Group>
-                  <Text>Work Type:</Text>
+                  <Text>Department:</Text>
                   <Text weight={600} underline>
-                    {workOrder.workType}
+                    {workOrder.ServiceRequest.Department.name}
                   </Text>
                 </Group>
                 <Group>
-                  <Text>Expert:</Text>
+                  <Text>Work Department:</Text>
                   <Text weight={600} underline>
-                    {workOrder.Employee.firstName}{" "}
-                    {workOrder.Employee.firstName}
+                    {workOrder.workDepartment}
                   </Text>
-                </Group>
-                <Group>
-                  <Text>Signature:</Text>
-                  <Text>{"_____________"}</Text>
                 </Group>
               </Stack>
             </SimpleGrid>

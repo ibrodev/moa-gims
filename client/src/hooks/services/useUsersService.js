@@ -51,6 +51,15 @@ const useUsersService = () => {
     }
   };
 
+  const count = async () => {
+    try {
+      const response = await axiosPrivate.get("/users/count");
+      return Promise.resolve(response.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+
   const resetPassword = async (id, password) => {
     try {
       const response = await axiosPrivate.put(
@@ -67,7 +76,7 @@ const useUsersService = () => {
         return Promise.reject(error.response.data.errors);
     }
   };
-  return { getAll, create, update, destroy, resetPassword };
+  return { getAll, create, update, destroy, count, resetPassword };
 };
 
 export default useUsersService;

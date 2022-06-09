@@ -39,6 +39,7 @@ import { useModals } from "@mantine/modals";
 import DataGridPagination from "./DataGridPagination";
 import DataGridSetPageSize from "./DataGridSetPageSize";
 import { Link, useNavigate } from "react-router-dom";
+// import { toEthiopianDateString } from "gc-to-ethiopian-calendar";
 
 const ServiceRequestsDataGrid = ({
   newServiceRequest,
@@ -123,7 +124,11 @@ const ServiceRequestsDataGrid = ({
             Vehicle: serviceRequest.Vehicle.plateNo,
             Department: serviceRequest.Department?.name,
             Driver: `${serviceRequest.Driver?.firstName} ${serviceRequest.Driver?.lastName}`,
-            Status: serviceRequest.status,
+            Status:
+              serviceRequest.status === "submitted" &&
+              auth.userRole === "team-leader"
+                ? "Received"
+                : serviceRequest.status,
             "Created At": serviceRequest.createdAt,
             inspectorId: serviceRequest.inspectorId,
             vehicleId: serviceRequest.vehicleId,
@@ -171,6 +176,7 @@ const ServiceRequestsDataGrid = ({
                   Header: key,
                   accessor: key,
                   Cell: ({ value }: any) => moment(value).fromNow(),
+                  // Cell: ({ value }: any) => toEthiopianDateString(value),
                 };
 
               return {

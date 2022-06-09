@@ -6,8 +6,9 @@ import {
   Title,
   useMantineTheme,
 } from "@mantine/core";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Plus, UserPlus } from "tabler-icons-react";
+import DocumentTitleContext from "../../../contexts/DocumentTitleProvider";
 import useAuth from "../../../hooks/useAuth";
 import DepartmentsDataGrid from "../../datagrids/DepartmentsDataGrid";
 import CreateDepartment from "./CreateDepartments";
@@ -24,6 +25,12 @@ function Departments() {
     data: {},
   });
   const [newDepartment, setNewDepartment] = useState(null);
+
+  const { setTitle } = useContext(DocumentTitleContext);
+
+  useEffect(() => {
+    setTitle((prev: any) => ({ ...prev, pageTitle: "Departments" }));
+  }, []);
 
   if (auth?.userRole !== "admin")
     return (

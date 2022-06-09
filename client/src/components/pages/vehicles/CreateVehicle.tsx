@@ -106,7 +106,7 @@ function CreateVehicle({ setNewVehicle }: any) {
             label="Plate No"
             name="plateNo"
             placeholder="Plate No"
-            description="something"
+            description="PN format: 4-digits of plate no-ET, e.g. 4-32132-ET"
             {...form.getInputProps("plateNo")}
             size="md"
           />

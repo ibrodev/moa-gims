@@ -38,7 +38,19 @@ const useDriversService = () => {
     }
   };
 
-  return { getAll, create, update };
+  const count = async () => {
+    try {
+      const response = await axiosPrivate.get("/drivers/count", {
+        withCredentials: true,
+      });
+
+      return Promise.resolve(response.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+
+  return { getAll, create, update, count };
 };
 
 export default useDriversService;

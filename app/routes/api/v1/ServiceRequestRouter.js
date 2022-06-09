@@ -41,4 +41,7 @@ ServiceRequestRouter.delete(
   ServiceRequestController.deleteFaults
 );
 
+// complete service request
+ServiceRequestRouter.put("/:id/complete", ServiceRequestController.complete);
+
 module.exports = ServiceRequestRouter;

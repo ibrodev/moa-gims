@@ -4,6 +4,7 @@ import {
   Car,
   CarCrash,
   Gauge,
+  History,
   Home2,
   Id,
   Tool,
@@ -15,6 +16,12 @@ import { LinksGroup } from "./NavbarLinksGroup";
 
 const navbarLinksData = [
   { label: "Dashboard", icon: Gauge, roles: ["*"], link: "/" },
+  {
+    label: "Vehicle History",
+    roles: ["inspector", "team-leader"],
+    icon: History,
+    link: "/vehicle-history",
+  },
   {
     label: "Users",
     roles: ["admin"],
@@ -40,6 +47,12 @@ const navbarLinksData = [
     link: "/service-requests",
   },
   {
+    label: "Work Order",
+    roles: ["inspector", "recorder"],
+    icon: Tool,
+    link: "/work-orders",
+  },
+  {
     label: "Vehicle",
     roles: ["recorder"],
     icon: Car,
@@ -56,12 +69,6 @@ const navbarLinksData = [
     roles: ["admin"],
     icon: Home2,
     link: "/departments",
-  },
-  {
-    label: "Work Order",
-    roles: ["inspector", "recorder"],
-    icon: Tool,
-    link: "/work-orders",
   },
 ];
 

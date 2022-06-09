@@ -12,6 +12,15 @@ const useVehiclesService = () => {
     }
   };
 
+  const getById = async (id) => {
+    try {
+      const response = await axiosPrivate.get(`/vehicles/${id}`);
+      return Promise.resolve(response.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+
   const getTypes = async () => {
     try {
       const response = await axiosPrivate.get("/vehicles/types", {
@@ -49,6 +58,18 @@ const useVehiclesService = () => {
     }
   };
 
+  const count = async () => {
+    try {
+      const response = await axiosPrivate.get("/vehicles/count", {
+        withCredentials: true,
+      });
+
+      return Promise.resolve(response.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+
   // const destroy = async (id) => {
   //   try {
   //     const response = await axiosPrivate.delete(`/users/${id}`, {
@@ -62,7 +83,7 @@ const useVehiclesService = () => {
   //   }
   // };
 
-  return { getAll, create, update, getTypes };
+  return { getAll, getById, create, update, count, getTypes };
 };
 
 export default useVehiclesService;

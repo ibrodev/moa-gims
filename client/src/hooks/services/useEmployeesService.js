@@ -55,7 +55,16 @@ const useEmployeesService = () => {
     }
   };
 
-  return { getAll, create, update, destroy };
+  const count = async () => {
+    try {
+      const response = await axiosPrivate.get("/employees/count");
+      return Promise.resolve(response.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+
+  return { getAll, create, update, count, destroy };
 };
 
 export default useEmployeesService;

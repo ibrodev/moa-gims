@@ -53,9 +53,9 @@ import { useForm } from "@mantine/form";
 import DataGridPagination from "./DataGridPagination";
 import DataGridSetPageSize from "./DataGridSetPageSize";
 import useWorkOrdersService from "../../hooks/services/useWorkOrdersService";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-const WorkOrdersDataGrid = ({ newWorkOrder, setActionDrawer }: any) => {
+const WorkOrdersDataGrid = ({ newWorkOrder }: any) => {
   const [workOrders, setWorkOrders] = useState([]);
   const [deleted, setDeleted] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -103,32 +103,6 @@ const WorkOrdersDataGrid = ({ newWorkOrder, setActionDrawer }: any) => {
     return deleteModalId;
   };
 
-  const openAcceptModal = (data: any) =>
-    modals.openConfirmModal({
-      title: "Accept Service Request",
-      centered: true,
-      children: (
-        <>
-          <Text mb={4}>
-            Are you sure you want to accept this service request?
-          </Text>
-          {!data["Odometer Reading"] && (
-            <Text size="sm" color="yellow">
-              <Text size="xs" weight="700" transform="uppercase">
-                Warning
-              </Text>
-              This SR Odometer Reading value is null, please make sure to update
-              it latter otherwise odometer reading value will not be available
-              for Work Orders which will be created under this SR
-            </Text>
-          )}
-        </>
-      ),
-      labels: { confirm: "Accept Service Request", cancel: "Cancel" },
-      onCancel: () => {},
-      // onConfirm: () => handleServiceRequestAccept(data.id),
-    });
-
   const Table = useTableComponent();
 
   const handleWorkOrderDelete = async (workOrderId: any, modalId: any) => {
@@ -158,20 +132,19 @@ const WorkOrdersDataGrid = ({ newWorkOrder, setActionDrawer }: any) => {
         .map((workOrder: any) => {
           return {
             id: workOrder.id,
-            "#SR Id": workOrder.serviceRequestId,
+            "#WO Number": `${workOrder.type === "project" ? "P" : "R"}/${
+              workOrder.id
+            }/${moment(workOrder.createdAt).year()}`,
+            "#SR Number": workOrder.serviceRequestId,
+            "Service Type": workOrder.serviceType,
             Inspector: `${workOrder.ServiceRequest?.Employee?.firstName} ${workOrder.ServiceRequest?.Employee?.lastName}`,
             inspectorId: workOrder.ServiceRequest?.inspectorId,
-            "Start Date": workOrder.startDate,
-            "End Date": workOrder.endDate,
-            "Work Department": workOrder.workDepartment,
-            Expert: `${workOrder.Employee?.firstName} ${workOrder.Employee?.lastName}`,
-            expertId: workOrder.Employee.id,
+            expertId: workOrder.Employee?.id,
+            Status: workOrder.status,
             "Created At": workOrder.createdAt,
           };
         })
         .filter((workOrder: any) => {
-          if (auth.userRole === "recorder") return workOrder.endDate !== null;
-
           if (auth.userRole === "inspector")
             return workOrder.inspectorId === auth.user.employeeId;
 
@@ -202,31 +175,11 @@ const WorkOrdersDataGrid = ({ newWorkOrder, setActionDrawer }: any) => {
                   accessor: key,
                   Cell: ({ value }: any) => moment(value).fromNow(),
                 };
-
-              if (key === "Start Date" || key === "End Date")
-                return {
-                  Header: key,
-                  accessor: key,
-                  Cell: ({ value }: any) =>
-                    value ? moment(value).calendar() : value,
-                };
-
-              if (key === "Faults")
-                return {
-                  Header: key,
-                  accessor: key,
-                  Cell: ({ value }: any) => (
-                    <List size="sm">
-                      {value.map((problem: any) => (
-                        <List.Item>{problem.description}</List.Item>
-                      ))}
-                    </List>
-                  ),
-                };
-              return { Header: key === "id" ? "#WO id" : key, accessor: key };
+              return { Header: key, accessor: key };
             })
             .filter((key) => key.Header !== "inspectorId")
             .filter((key) => key.Header !== "expertId")
+            .filter((key) => key.Header !== "id")
         : [],
     [workOrders]
   );
@@ -237,50 +190,29 @@ const WorkOrdersDataGrid = ({ newWorkOrder, setActionDrawer }: any) => {
       {
         id: "Actions",
         Header: "Actions",
-        Cell: ({ row }) => (
+        Cell: ({ row }: any) => (
           <Group spacing="sm">
             <Tooltip label="View work order" withArrow>
               <ActionIcon
+                component={Link}
+                to={`/work-orders/${row.original.id}`}
                 variant="transparent"
-                color="green"
-                onClick={() =>
-                  navigate(`./${row.values.id}`, { replace: true })
-                }
               >
-                <Eye size={18} />
+                <Eye size={18} color="blue" />
               </ActionIcon>
             </Tooltip>
-            {auth.userRole === "inspector" &&
-            row.values["Start Date"] === null ? (
-              <>
-                <Tooltip label="More Options" withArrow>
-                  <Menu position="bottom" placement="end" gutter={-6} withArrow>
-                    <Menu.Item
-                      icon={<Pencil size={18} />}
-                      onClick={() =>
-                        setActionDrawer({
-                          opened: true,
-                          data: row.original,
-                          action: "update",
-                          title: "Update Work Order",
-                        })
-                      }
-                    >
-                      Update work order
-                    </Menu.Item>
-                    <Menu.Item
-                      icon={<Trash size={18} />}
-                      color="red"
-                      onClick={() => openDeleteModal(row.values.id)}
-                    >
-                      Delete work order
-                    </Menu.Item>
-                  </Menu>
+            {row.values.Status === "pending" &&
+              auth.userRole === "inspector" &&
+              auth.user.employeeId === row.original.inspectorId && (
+                <Tooltip label="Delete work order" withArrow>
+                  <ActionIcon
+                    variant="transparent"
+                    onClick={() => openDeleteModal(row.original.id)}
+                  >
+                    <Trash size={18} color="red" />
+                  </ActionIcon>
                 </Tooltip>
-              </>
-            ) : (
-              <></>
-            )}
+              )}
           </Group>
         ),
       },
@@ -341,7 +273,7 @@ const WorkOrdersDataGrid = ({ newWorkOrder, setActionDrawer }: any) => {
   if (workOrders?.length === 0)
     return (
       <Box>
-        <MoodSad /> <Text>No service request found</Text>
+        <MoodSad /> <Text>No work order found</Text>
       </Box>
     );
 

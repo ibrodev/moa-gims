@@ -11,24 +11,27 @@ import GlobalStyles from "./components/styles/GlobalStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NotificationsProvider } from "@mantine/notifications";
 import { ModalsProvider } from "@mantine/modals";
+import { DocumentTitleProvider } from "./contexts/DocumentTitleProvider";
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeContext>
         <GlobalStyles />
-        <Routes>
-          <Route
-            path="/*"
-            element={
-              <NotificationsProvider>
-                <ModalsProvider>
-                  <App />
-                </ModalsProvider>
-              </NotificationsProvider>
-            }
-          />
-        </Routes>
+        <DocumentTitleProvider>
+          <Routes>
+            <Route
+              path="/*"
+              element={
+                <NotificationsProvider>
+                  <ModalsProvider>
+                    <App />
+                  </ModalsProvider>
+                </NotificationsProvider>
+              }
+            />
+          </Routes>
+        </DocumentTitleProvider>
       </ThemeContext>
     </BrowserRouter>
   </React.StrictMode>,

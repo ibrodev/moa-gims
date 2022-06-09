@@ -7,7 +7,13 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ ServiceRequest, Employee, Fault }) {
+    static associate({
+      ServiceRequest,
+      Employee,
+      Fault,
+      PerformedTask,
+      SparePart,
+    }) {
       // define association here
       WorkOrder.belongsTo(ServiceRequest, {
         foreignKey: "serviceRequestId",
@@ -22,6 +28,18 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       WorkOrder.hasMany(Fault, {
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        foreignKey: "workOrderId",
+      });
+
+      WorkOrder.hasMany(PerformedTask, {
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+        foreignKey: "workOrderId",
+      });
+
+      WorkOrder.hasMany(SparePart, {
         onDelete: "RESTRICT",
         onUpdate: "CASCADE",
         foreignKey: "workOrderId",
@@ -57,11 +75,6 @@ module.exports = (sequelize, DataTypes) => {
             args: true,
             msg: "Start Date must be a valid date format",
           },
-
-          isBefore(value) {
-            if (value > this.endDate)
-              throw new Error("Start Date must be after Start Date");
-          },
         },
       },
       endDate: {
@@ -78,13 +91,8 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       expertId: {
-        allowNull: false,
         type: DataTypes.INTEGER,
         validate: {
-          notNull: {
-            args: true,
-            msg: "Expert Id is required",
-          },
           isInt: {
             args: true,
             msg: "Expert Id must be an integer",
@@ -92,16 +100,11 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       workDepartment: {
-        allowNull: false,
         type: DataTypes.ENUM("Mechanical", "Electrical", "Body"),
         validate: {
-          notNull: {
-            args: true,
-            msg: "Work Type is required",
-          },
           isIn: {
             args: [["Mechanical", "Electrical", "Body"]],
-            msg: "Work Type must be one of the following: Mechanical, Electrical, Body",
+            msg: "Work Department must be one of the following: Mechanical, Electrical, Body",
           },
         },
       },
@@ -115,6 +118,67 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
 
+      type: {
+        type: DataTypes.ENUM("regular", "project"),
+        allowNull: false,
+        validate: {
+          notNull: {
+            args: true,
+            msg: "Type is required",
+          },
+          isIn: {
+            args: [["regular", "project"]],
+            msg: "Type must be either 'regular' or 'project'",
+          },
+        },
+      },
+      maintenanceType: {
+        type: DataTypes.ENUM("preventive", "corrective"),
+        allowNull: false,
+        validate: {
+          notNull: {
+            args: true,
+            msg: "Maintenance Type is required",
+          },
+          isIn: {
+            args: [["preventive", "corrective"]],
+            msg: "Maintenance Type must be either 'preventive' or 'corrective'",
+          },
+        },
+      },
+      maintenanceLocation: {
+        type: DataTypes.ENUM("in-garage", "on-field", "on-road"),
+        validate: {
+          isIn: {
+            args: [["in-garage", "on-field", "on-road"]],
+            msg: "Maintenance Location must be one of the following: in-garage, on-field, on-road",
+          },
+        },
+      },
+      crashAccident: {
+        type: DataTypes.BOOLEAN,
+      },
+      insurance: {
+        type: DataTypes.BOOLEAN,
+      },
+      status: {
+        type: DataTypes.ENUM("pending", "in-progress", "completed"),
+        defaultValue: "pending",
+        allowNull: false,
+        validate: {
+          notNull: {
+            args: true,
+            msg: "Status is required",
+          },
+          isIn: {
+            args: [["pending", "in-progress", "completed"]],
+            msg: "Status must be one of the following: pending, in-progress or completed",
+          },
+        },
+      },
+      serviceCost: {
+        type: DataTypes.FLOAT,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
@@ -126,16 +190,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      validate: {
-        ServiceCost() {
-          if (
-            this.serviceType === "out-source" &&
-            !this.serviceCost &&
-            this.serviceCost !== 0
-          )
-            throw new Error("Service Cost is Required");
-        },
-      },
+
       modelName: "WorkOrder",
     }
   );

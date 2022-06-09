@@ -7,8 +7,9 @@ import {
   Title,
   useMantineTheme,
 } from "@mantine/core";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserPlus } from "tabler-icons-react";
+import DocumentTitleContext from "../../../contexts/DocumentTitleProvider";
 import useAuth from "../../../hooks/useAuth";
 import UsersDataGrid from "../../datagrids/UsersDataGrid";
 import CreateUser from "./CreateUser";
@@ -26,6 +27,12 @@ function AllUsers() {
     data: {},
   });
   const [newUser, setNewUser] = useState(null);
+
+  const { setTitle } = useContext(DocumentTitleContext);
+
+  useEffect(() => {
+    setTitle((prev: any) => ({ ...prev, pageTitle: "Users" }));
+  }, []);
 
   if (auth?.userRole !== "admin")
     return (

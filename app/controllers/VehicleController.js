@@ -1,6 +1,12 @@
 const VehicleModel = require("../models").Vehicle;
 const VehicleTypeModel = require("../models").VehicleType;
 const EmployeeModel = require("../models").Employee;
+const ServiceRequestModel = require("../models").ServiceRequest;
+const DriverModel = require("../models").Driver;
+const WorkOrderModel = require("../models").WorkOrder;
+const FaultModel = require("../models").Fault;
+const SparePartModel = require("../models").SparePart;
+const PerformedTaskModel = require("../models").PerformedTask;
 const validator = require("validator");
 const { sequelize } = require("../models");
 
@@ -13,6 +19,9 @@ module.exports = {
           {
             model: VehicleTypeModel,
             as: "vehicleType",
+          },
+          {
+            model: ServiceRequestModel,
           },
         ],
       });
@@ -38,10 +47,27 @@ module.exports = {
       if (isNaN(id)) return next();
 
       const vehicle = await VehicleModel.findByPk(id, {
+        order: [[ServiceRequestModel, "createdAt", "DESC"]],
         include: [
           {
             model: VehicleTypeModel,
             as: "vehicleType",
+          },
+          {
+            model: ServiceRequestModel,
+            include: [
+              { model: EmployeeModel },
+              { model: DriverModel },
+              { model: FaultModel, as: "faults" },
+              {
+                model: WorkOrderModel,
+                include: [
+                  { model: SparePartModel },
+                  { model: PerformedTaskModel },
+                  { model: EmployeeModel },
+                ],
+              },
+            ],
           },
         ],
       });

@@ -20,6 +20,10 @@ import PrintLayout from "../layouts/print";
 import PrintWorkOrder from "../pages/work-orders/PrintWorkOrder";
 import PrintSparePartListing from "../pages/work-orders/PrintSparePartListing";
 import ViewServiceRequest from "../pages/service-requests/ViewServiceRequest";
+import { useContext, useEffect } from "react";
+import DocumentTitleContext from "../../contexts/DocumentTitleProvider";
+import { useDocumentTitle } from "@mantine/hooks";
+import VehiclesHistory from "../pages/vehicles-history/VehiclesHistory";
 
 function App() {
   return (
@@ -34,6 +38,7 @@ function App() {
               <Route path="employees" element={<Employees />} />
               <Route path="departments" element={<Departments />} />
               <Route path="service-requests" element={<ServiceRequests />} />
+              <Route path="vehicle-history" element={<VehiclesHistory />} />
               <Route
                 path="service-requests/:id"
                 element={<ViewServiceRequest />}

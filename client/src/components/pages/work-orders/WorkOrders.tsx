@@ -1,38 +1,23 @@
-import {
-  Box,
-  Button,
-  Center,
-  Drawer,
-  Group,
-  ScrollArea,
-  Title,
-  useMantineTheme,
-} from "@mantine/core";
-import { useState } from "react";
-import { Plus, UserPlus } from "tabler-icons-react";
+import { Modal } from "@mantine/core";
+import { Box, Button, Group, Title, useMantineTheme } from "@mantine/core";
+import { useContext, useEffect, useState } from "react";
+import { Plus } from "tabler-icons-react";
+import DocumentTitleContext from "../../../contexts/DocumentTitleProvider";
 import useAuth from "../../../hooks/useAuth";
-import ServiceRequestsDataGrid from "../../datagrids/ServiceRequestsDataGrid";
 import WorkOrdersDataGrid from "../../datagrids/WorkOrdersDataGrid";
-import AssignInspector from "../service-requests/AssignInspector";
-import UpdateServiceRequest from "../service-requests/UpdateServiceRequest";
 import CreateWorkOrder from "./CreateWorkOrders";
-import UpdateWorkOrder from "./UpdateWorkOrders";
-// import AssignInspector from "./AssignInspector";
-// import CreateServiceRequest from "./CreateServiceRequest";
-// import UpdateOdometerReading from "./UpdateOdometerReading";
-// import UpdateServiceRequest from "./UpdateServiceRequest";
 
 function WorkOrders() {
   const theme = useMantineTheme();
   const { auth } = useAuth();
-
-  const [actionDrawer, setActionDrawer] = useState({
-    opened: false,
-    title: "",
-    action: "",
-    data: {},
-  });
+  const [opened, setOpened] = useState(false);
   const [newWorkOrder, setNewWorkOrder] = useState(null);
+
+  const { setTitle } = useContext(DocumentTitleContext);
+
+  useEffect(() => {
+    setTitle((prev: any) => ({ ...prev, pageTitle: "Work Orders" }));
+  }, []);
 
   if (auth?.userRole === "admin" || auth?.userRole === "team-leader")
     return (
@@ -50,41 +35,20 @@ function WorkOrders() {
 
   return (
     <>
-      <Drawer
-        opened={actionDrawer.opened}
-        onClose={() => setActionDrawer((prev) => ({ ...prev, opened: false }))}
-        title={actionDrawer.title}
-        padding="xl"
-        size="xl"
-        position="right"
+      <Modal
+        opened={opened}
+        onClose={() => setOpened(false)}
+        centered
+        title="Create Work Order"
+        overflow="inside"
+        closeOnClickOutside={false}
+        size={1000}
       >
-        <ScrollArea
-          style={{ height: "100%", padding: "0 0 50px 0" }}
-          offsetScrollbars
-        >
-          {actionDrawer.opened &&
-            (actionDrawer.action === "create" ? (
-              <CreateWorkOrder setNewWorkOrder={setNewWorkOrder} />
-            ) : actionDrawer.action === "update" ? (
-              <UpdateWorkOrder
-                setNewWorkOrder={setNewWorkOrder}
-                data={actionDrawer.data}
-                setActionDrawer={setActionDrawer}
-              />
-            ) : actionDrawer.action === "assignInspector" ? (
-              <AssignInspector
-                setNewWorkOrder={setNewWorkOrder}
-                data={actionDrawer.data}
-                setActionDrawer={setActionDrawer}
-              />
-            ) : actionDrawer.action === "updateOdometerReading" ? (
-              <></>
-            ) : (
-              <></>
-            ))}
-        </ScrollArea>
-      </Drawer>
-
+        <CreateWorkOrder
+          setNewWorkOrder={setNewWorkOrder}
+          closeModal={() => setOpened(false)}
+        />
+      </Modal>
       <Box
         sx={{
           display: "flex",
@@ -100,24 +64,14 @@ function WorkOrders() {
             <Button
               size="md"
               rightIcon={<Plus size={18} />}
-              onClick={() =>
-                setActionDrawer({
-                  opened: true,
-                  title: "New Service Request Form",
-                  action: "create",
-                  data: {},
-                })
-              }
+              onClick={() => setOpened(true)}
             >
               Create Work Order
             </Button>
           )}
         </Group>
       </Box>
-      <WorkOrdersDataGrid
-        newWorkOrder={newWorkOrder}
-        setActionDrawer={setActionDrawer}
-      />
+      <WorkOrdersDataGrid newWorkOrder={newWorkOrder} />
     </>
   );
 }

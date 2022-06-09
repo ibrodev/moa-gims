@@ -10,17 +10,19 @@ import {
 } from "@mantine/core";
 import MoALogo from "../../../images/moa-logo.png";
 import { useForm } from "@mantine/form";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Key, User, Logout, AlertCircle } from "tabler-icons-react";
 import AuthService from "../../../hooks/services/AuthService";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
+import DocumentTitleContext from "../../../contexts/DocumentTitleProvider";
 
 function Login() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { setAuth } = useAuth();
+  const { setTitle } = useContext(DocumentTitleContext);
 
   const form = useForm({
     initialValues: {
@@ -56,6 +58,10 @@ function Login() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setTitle((prev: any) => ({ ...prev, pageTitle: "Login" }));
+  }, []);
 
   return (
     <>
@@ -131,7 +137,7 @@ function Login() {
         </form>
         <Box sx={{ marginTop: 100, textAlign: "center" }}>
           <Text size="xs" color="gray">
-            Developed and Designed by
+            Designed and Developed by
           </Text>
           <Text size="xs" weight={600} color="gray">
             MoA, ICT Directorate

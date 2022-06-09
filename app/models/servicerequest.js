@@ -109,6 +109,7 @@ module.exports = (sequelize, DataTypes) => {
                 "accepted",
                 "rejected",
                 "cancelled",
+                "completed",
               ],
             ],
             msg: "status must be one of the following: draft, submitted, pending-inspection, accepted, rejected, cancelled",
@@ -122,6 +123,10 @@ module.exports = (sequelize, DataTypes) => {
       inspectorId: {
         allowNull: true,
         type: DataTypes.INTEGER,
+      },
+      completedAt: {
+        allowNull: true,
+        type: DataTypes.DATE,
       },
       createdAt: {
         allowNull: false,

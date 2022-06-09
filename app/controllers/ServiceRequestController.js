@@ -3,6 +3,7 @@ const EmployeeModel = require("../models").Employee;
 const VehicleModel = require("../models").Vehicle;
 const DriverModel = require("../models").Driver;
 const DepartmentModel = require("../models").Department;
+const WorkOrderModel = require("../models").WorkOrder;
 const FaultModel = require("../models").Fault;
 const validator = require("validator");
 const { sequelize } = require("../models");
@@ -62,6 +63,9 @@ module.exports = {
           {
             model: FaultModel,
             as: "faults",
+          },
+          {
+            model: WorkOrderModel,
           },
         ],
       });
@@ -334,6 +338,35 @@ module.exports = {
 
       await serviceRequest.removeFaults(faults);
 
+      res.status(201).json(serviceRequest.id);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // complete service request
+  complete: async (req, res, next) => {
+    try {
+      let { id } = req.params;
+      if (isNaN(id)) return next();
+
+      const serviceRequest = await ServiceRequestModel.findByPk(id);
+      if (!serviceRequest)
+        return res
+          .status(400)
+          .json({ errors: { message: "Service Request does not exist" } });
+
+      if (serviceRequest.status !== "accepted")
+        return res.status(400).json({
+          errors: {
+            message: "couldn't complete service request",
+          },
+        });
+
+      await serviceRequest.update({
+        status: "completed",
+        completedAt: Date.now(),
+      });
       res.status(201).json(serviceRequest.id);
     } catch (error) {
       next(error);

@@ -42,13 +42,12 @@ function SetStartDate({ workOrder, setUpdate, closeModal }: any) {
       await validateValues();
       await start(workOrder.id, {
         startDate: dateValue,
-        serviceType: typeValue,
       });
       setUpdate(`${Math.random()} updated`);
       closeModal();
       showNotification({
         title: "Work Order Started",
-        message: `Start Date of a Work Order with id ${workOrder.id} registered successfully`,
+        message: `Work Order with id ${workOrder.id} has started successfully`,
         icon: <Check size={18} />,
       });
     } catch (errors: any) {
@@ -67,8 +66,6 @@ function SetStartDate({ workOrder, setUpdate, closeModal }: any) {
     let errors = [];
     if (!dateValue)
       errors.push({ path: "startDate", message: "Start Date is required" });
-    if (typeValue.length === 0)
-      errors.push({ path: "serviceType", message: "Service Type is Required" });
 
     if (Object.keys(errors).length > 0) return Promise.reject(errors);
 
@@ -77,14 +74,13 @@ function SetStartDate({ workOrder, setUpdate, closeModal }: any) {
 
   useEffect(() => {
     if (workOrder.startDate) setDateValue(new Date(workOrder.startDate));
-    if (workOrder.serviceType) setTypeValue(workOrder.serviceType);
   }, [workOrder]);
 
   return (
     <>
       <Stack>
         <DatePicker
-          placeholder="Pick Date"
+          placeholder="Pick Start Date"
           label="Start Date"
           required
           value={dateValue}
