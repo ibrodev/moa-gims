@@ -8,23 +8,17 @@ import { Stack } from "@mantine/core";
 import { useMantineTheme } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { Container } from "@mantine/core";
-import {
-  ReactComponentElement,
-  ReactElement,
-  useEffect,
-  useState,
-} from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   AlertCircle,
   AntennaBars5,
   ArrowNarrowLeft,
   Check,
-  ListDetails,
   Pencil,
   PlaylistX,
   Plus,
-  RotateClockwise,
+  Printer,
   Send,
   Tool,
   Trash,
@@ -51,6 +45,8 @@ import AssignInspector from "./AssignInspector";
 import AcceptServiceRequest from "./AcceptServiceRequest";
 import _ from "lodash";
 import { RingProgress } from "@mantine/core";
+import { useReactToPrint } from "react-to-print";
+import PrintRequestReport from "./PrintRequestReport";
 
 interface modalI {
   opened: boolean;
@@ -64,6 +60,13 @@ function ViewServiceRequest() {
   const { auth } = useAuth();
   const modals = useModals();
   const navigate = useNavigate();
+
+  const PrintRequestReportRef = useRef(null);
+  const handlePrint = useReactToPrint({
+    content: () => PrintRequestReportRef.current,
+    pageStyle: () => `@page { size: A4; margin: 24.5mm;} `,
+    documentTitle: "Service Request",
+  });
 
   const [serviceRequest, setServiceRequest] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -339,6 +342,14 @@ function ViewServiceRequest() {
 
   return (
     <>
+      {serviceRequest?.status === "completed" && (
+        <div style={{ display: "none" }}>
+          <PrintRequestReport
+            ref={PrintRequestReportRef}
+            serviceRequest={serviceRequest}
+          />
+        </div>
+      )}
       <Modal
         opened={modal.opened}
         onClose={() => setModal((prev) => ({ ...prev, opened: false }))}
@@ -540,6 +551,16 @@ function ViewServiceRequest() {
                             </Button>
                           </>
                         )}
+
+                      {serviceRequest.status === "completed" && (
+                        <Button
+                          leftIcon={<Printer size={15} />}
+                          size="xs"
+                          onClick={handlePrint}
+                        >
+                          Print Report
+                        </Button>
+                      )}
                     </Group>
                   </Group>
                   <Divider />

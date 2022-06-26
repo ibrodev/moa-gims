@@ -10,6 +10,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import { randomId } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { forwardRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +29,7 @@ import useVehiclesService from "../../../hooks/services/useVehiclesService";
 function CreateVehicle({ setNewVehicle }: any) {
   const [loading, setLoading] = useState(false);
   const [vehicleTypes, setVehicleTypes] = useState<any>([]);
+  const [created, setCreated] = useState("");
 
   const { create, getTypes } = useVehiclesService();
 
@@ -49,7 +51,7 @@ function CreateVehicle({ setNewVehicle }: any) {
       manufacturer: "",
       model: "",
       engineNo: "",
-      engineCapacity: null,
+      engineCapacity: "",
       engineType: "",
       chassisNo: "",
       vehicleTypeId: "",
@@ -67,6 +69,7 @@ function CreateVehicle({ setNewVehicle }: any) {
         icon: <Check size={18} />,
       });
       setNewVehicle(id);
+      setCreated(randomId);
       form.reset();
     } catch (errors: any) {
       interface errorInterface {
@@ -95,7 +98,7 @@ function CreateVehicle({ setNewVehicle }: any) {
 
   useEffect(() => {
     fetchVehicleTypes();
-  }, []);
+  }, [created]);
 
   return (
     <Box>
@@ -139,8 +142,11 @@ function CreateVehicle({ setNewVehicle }: any) {
           data={vehicleTypes}
           placeholder="Select Vehicle Type"
           nothingFound="Nothing found"
-          value={form.values.vehicleTypeId}
-          onChange={(value: any) => form.setFieldValue("vehicleTypeId", value)}
+          value={`${form.values.vehicleTypeId}`}
+          onChange={(value: any) =>
+            form.setFieldValue("vehicleTypeId", `${value}`)
+          }
+          // onChange={(value: any) => console.log(value)}
           searchable
           creatable
           getCreateLabel={(query) => `+ Create "${query}"`}
@@ -150,6 +156,7 @@ function CreateVehicle({ setNewVehicle }: any) {
               return [...current, newType];
             })
           }
+          size="md"
         />
         <TextInput
           label="Engine No"

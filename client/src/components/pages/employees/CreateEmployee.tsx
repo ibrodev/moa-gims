@@ -51,8 +51,6 @@ function CreateEmployee({ setNewEmployee }: any) {
       .string()
       .min(4, { message: "Username must be at least 4 characters long" })
       .max(20, { message: "Username must be 20 or less characters long" }),
-
-    positionId: z.number(),
   });
 
   const form = useForm({

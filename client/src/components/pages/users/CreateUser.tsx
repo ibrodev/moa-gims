@@ -85,7 +85,6 @@ function CreateUser({ setNewUser }: any) {
         message:
           "Role must be one of the following: admin, recorder, team-leader, inspector",
       }),
-    employeeId: z.number().optional(),
   });
 
   const form = useForm({
@@ -94,7 +93,7 @@ function CreateUser({ setNewUser }: any) {
       username: "",
       password: "",
       role: "",
-      employeeId: undefined,
+      employeeId: "",
     },
   });
 

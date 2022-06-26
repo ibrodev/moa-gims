@@ -76,7 +76,7 @@ export default function AppLayout() {
                 style={{ display: "flex", alignItems: "center", gap: "8px" }}
               >
                 <Image src={MoaLogo} height={40} width={40} />
-                <Title order={3}>MoA - GIMS</Title>
+                <Title order={3}>MoA - GIMaS</Title>
               </div>
               <div
                 style={{ display: "flex", alignItems: "center", gap: "8px" }}

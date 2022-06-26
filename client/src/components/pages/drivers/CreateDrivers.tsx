@@ -76,7 +76,7 @@ function CreateDrivers({ setNewDriver }: any) {
           required
           label="License No"
           name="licenseNo"
-          placeholder="Driver Driving License No"
+          placeholder="Driving License No"
           {...form.getInputProps("licenseNo")}
           size="md"
         />

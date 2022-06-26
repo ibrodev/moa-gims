@@ -106,7 +106,7 @@ const VehiclesDataGrid = ({ newVehicle, setActionDrawer }: any) => {
         Header: "Actions",
         Cell: ({ row }) => (
           <Group spacing="sm">
-            <Tooltip label="edit vehicle" withArrow color="blue">
+            {/* <Tooltip label="edit vehicle" withArrow color="blue">
               <ActionIcon
                 variant="transparent"
                 color="blue"
@@ -121,7 +121,7 @@ const VehiclesDataGrid = ({ newVehicle, setActionDrawer }: any) => {
               >
                 <Pencil size={18} />
               </ActionIcon>
-            </Tooltip>
+            </Tooltip> */}
           </Group>
         ),
       },
@@ -182,7 +182,7 @@ const VehiclesDataGrid = ({ newVehicle, setActionDrawer }: any) => {
   if (vehicles?.length === 0)
     return (
       <Box>
-        <MoodSad /> <Text>No user found</Text>
+        <MoodSad /> <Text>No Vehicle found</Text>
       </Box>
     );
 

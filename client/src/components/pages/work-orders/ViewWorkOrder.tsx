@@ -146,6 +146,7 @@ function ViewWorkOrder() {
         content: (
           <Complete
             workOrder={workOrder}
+            setUpdate={() => setUpdate(`${randomId()}`)}
             closeModal={() =>
               setModal({
                 opened: false,
@@ -400,6 +401,7 @@ function ViewWorkOrder() {
                                       content: null,
                                     })
                                   }
+                                  setUpdate={setUpdate}
                                 />
                               ),
                             })

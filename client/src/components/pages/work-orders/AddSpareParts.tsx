@@ -16,7 +16,7 @@ import { useRef, useState } from "react";
 import { Check, Minus, Plus, X } from "tabler-icons-react";
 import useWorkOrdersService from "../../../hooks/services/useWorkOrdersService";
 
-function AddSpareParts({ workOrder, closeModal }: any) {
+function AddSpareParts({ workOrder, closeModal, setUpdate }: any) {
   const [addingParts, setAddingParts] = useState(false);
   const { addParts } = useWorkOrdersService();
 
@@ -112,6 +112,7 @@ function AddSpareParts({ workOrder, closeModal }: any) {
         message: `Spare Parts registered successfully`,
         icon: <Check size={18} />,
       });
+      setUpdate(`${randomId()}`);
       closeModal();
     } catch (error) {
       console.log(error);

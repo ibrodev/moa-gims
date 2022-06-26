@@ -188,7 +188,7 @@ function CreateWorkOrder({ setNewWorkOrder, closeModal }: any) {
       const employees = await getAllEmployees();
       const workExperts = employees
         .filter((employee: any) => employee.Position?.name !== "Team Leader")
-        .filter((employee: any) => employee.Position?.name !== "Recorder")
+        .filter((employee: any) => employee.Position?.name !== "Record Officer")
         .filter((employee: any) => employee.Position?.name !== "Administrator")
         .filter((employee: any) => employee.Position?.name !== "Inspector");
       setWorkExperts(workExperts);

@@ -50,12 +50,13 @@ function UpdateEmployee({ setNewEmployee, data, setActionDrawer }: any) {
     initialValues: {
       firstName: data["First Name"],
       lastName: data["Last Name"],
-      positionId: data.positionId,
+      positionId: `${data.positionId}`,
     },
   });
 
   useEffect(() => {
     fetchPositions();
+    console.log(data);
   }, []);
 
   const handleOnSubmit = async (values: any) => {

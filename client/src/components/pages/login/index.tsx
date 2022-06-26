@@ -87,7 +87,7 @@ function Login() {
           }}
           order={4}
         >
-          MoA - Garage Information Management System
+          MoA - GIMaS
         </Title>
 
         {form.errors.error && (

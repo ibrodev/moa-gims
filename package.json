@@ -28,6 +28,7 @@
     "morgan": "^1.10.0",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
+    "react-to-print": "^2.14.7",
     "sequelize": "^6.18.0",
     "sequelize-bcrypt": "^1.1.0",
     "validator": "^13.7.0"

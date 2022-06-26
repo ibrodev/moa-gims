@@ -5,6 +5,8 @@ const DriverModel = require("../models").Driver;
 const DepartmentModel = require("../models").Department;
 const WorkOrderModel = require("../models").WorkOrder;
 const FaultModel = require("../models").Fault;
+const PerformedTaskModel = require("../models").PerformedTask;
+const SparePartModel = require("../models").SparePart;
 const validator = require("validator");
 const { sequelize } = require("../models");
 const _ = require("lodash");
@@ -66,6 +68,12 @@ module.exports = {
           },
           {
             model: WorkOrderModel,
+            include: [
+              { model: EmployeeModel },
+              { model: FaultModel },
+              { model: PerformedTaskModel },
+              { model: SparePartModel },
+            ],
           },
         ],
       });

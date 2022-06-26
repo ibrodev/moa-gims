@@ -11,15 +11,15 @@ function CreatePosition({ setNewPosition }: any) {
 
   const { create } = usePositionsService();
 
-  const schema = z.object({
-    name: z
-      .string()
-      .min(4, { message: "Username must be at least 4 characters long" })
-      .max(20, { message: "Username must be 20 or less characters long" }),
-  });
+  // const schema = z.object({
+  //   name: z
+  //     .string()
+  //     .min(4, { message: "Username must be at least 4 characters long" })
+  //     .max(20, { message: "Username must be 20 or less characters long" }),
+  // });
 
   const form = useForm({
-    schema: zodResolver(schema),
+    // schema: zodResolver(schema),
     initialValues: {
       name: "",
     },

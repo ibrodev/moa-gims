@@ -14,6 +14,9 @@ const GlobalStyles = () => {
           margin: 0,
           backgroundColor: theme.colors.gray[0],
           overflowX: "hidden",
+          [`@media print`]: {
+            backgroundColor: theme.white,
+          },
         },
       })}
     />
